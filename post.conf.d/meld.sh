@@ -19,12 +19,12 @@
 
 MELD_APPDIR=$ARTIFACT_DIR/Meld.app
 MELD_APPCON_DIR=$MELD_APPDIR/Contents
-MELD_APPRES_DIR=$MELD_APPCON_DIR/Resources
-MELD_APPBIN_DIR=$MELD_APPRES_DIR/bin
-MELD_APPETC_DIR=$MELD_APPRES_DIR/etc
-MELD_APPLIB_DIR=$MELD_APPRES_DIR/lib
+MELD_APP_RES_DIR=$MELD_APPCON_DIR/Resources
+MELD_APP_BIN_DIR=$MELD_APP_RES_DIR/bin
+MELD_APPETC_DIR=$MELD_APP_RES_DIR/etc
+MELD_APP_LIB_DIR=$MELD_APP_RES_DIR/lib
 MELD_APPFRA_DIR=$MELD_APPCON_DIR/Frameworks
-MELD_APPPLIST=$MELD_APPCON_DIR/Info.plist
+MELD_APP_PLIST=$MELD_APPCON_DIR/Info.plist
 
 MELD_VER=$(
   xmllint \
@@ -103,7 +103,7 @@ function meld_pipinstall
 
   # shellcheck disable=SC2086 # we need word splitting here
   pip$MELD_PYTHON_VER_MAJOR install \
-    --prefix "$MELD_APPRES_DIR" \
+    --prefix "$MELD_APP_RES_DIR" \
     $options \
     $wheels
 
@@ -120,7 +120,7 @@ function meld_pipinstall
 
 function meld_pipinstall_numpy
 {
-  local numpy_dir=$MELD_APPLIB_DIR/python$MELD_PYTHON_VER/site-packages/numpy
+  local numpy_dir=$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/numpy
 
   find "$numpy_dir" '(' -name "*.so" -o -name "*.dylib" ')' \
     -exec codesign --remove-signature {} \;
@@ -135,15 +135,15 @@ function meld_pipinstall_numpy
   done
 
   # remove CLI tools
-  rm "$MELD_APPRES_DIR"/bin/f2py*
+  rm "$MELD_APP_RES_DIR"/bin/f2py*
 }
 
 function meld_pipinstall_pillow
 {
   lib_change_paths \
     @loader_path/../../.. \
-    "$MELD_APPLIB_DIR" \
-    "$MELD_APPLIB_DIR"/python$MELD_PYTHON_VER/site-packages/PIL/*.so
+    "$MELD_APP_LIB_DIR" \
+    "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/PIL/*.so
 }
 
 function meld_pipinstall_pygobject
@@ -151,21 +151,21 @@ function meld_pipinstall_pygobject
   # GObject Introspection
   lib_change_paths \
     @loader_path/../../.. \
-    "$MELD_APPLIB_DIR" \
-    "$MELD_APPLIB_DIR"/python$MELD_PYTHON_VER/site-packages/gi/_gi*.so
+    "$MELD_APP_LIB_DIR" \
+    "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/gi/_gi*.so
 
   # Cairo
   lib_change_paths \
     @loader_path/../../.. \
-    "$MELD_APPLIB_DIR" \
-    "$MELD_APPLIB_DIR"/python$MELD_PYTHON_VER/site-packages/cairo/\
+    "$MELD_APP_LIB_DIR" \
+    "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/cairo/\
 _cairo.cpython-${MELD_PYTHON_VER/./}-darwin.so
 }
 
 function meld_pipinstall_xdot
 {
-  ln -s dot "$MELD_APPBIN_DIR"/fdp
-  rm "$MELD_APPBIN_DIR"/xdot
+  ln -s dot "$MELD_APP_BIN_DIR"/fdp
+  rm "$MELD_APP_BIN_DIR"/xdot
 }
 
 function meld_download_python
