@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<!DOCTYPE moduleset SYSTEM "moduleset.dtd">
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<moduleset>
+  <!--
+    Please format this file using https://github.com/htacg/tidy-html5
+
+        tidy -config tidy.conf -m gtk-osx-random.modules
+  -->
+  <repository name="download.gnome.org"
+              default="yes"
+              href="https://download.gnome.org/sources/"
+              type="tarball" />
+  <repository name="github-tarball"
+              href="https://github.com/"
+              type="tarball" />
+  <repository name="ftp.gnu.org"
+              href="https://ftp.gnu.org/gnu/"
+              type="tarball" />
+  <repository name="iso-codes"
+              href="https://salsa.debian.org/iso-codes-team/iso-codes/uploads/"
+              type="tarball" />
+  <repository name="graphviz"
+              href="https://gitlab.com/graphviz/graphviz/-/archive/"
+              type="tarball" />
+  <repository name="sqlite"
+              href="http://www.sqlite.org/"
+              type="tarball" />
+  <repository name="itstool"
+              href="http://files.itstool.org/"
+              type="tarball" />
+  <!---->
+  <include href="../jhb/gtk-osx-random.modules" />
+  <!---->
+  <cmake id="graphviz"
+         cmakeargs="-Dwith_gvedit=NO">
+    <branch module="8.0.5/graphviz-8.0.5.tar.bz2"
+            version="8.0.5"
+            hash="sha256:c1901fe52483fad55fbf893ccd59a3dcaedd53f0d50b5aebbbf3deaba93b674d"
+            repo="graphviz">
+      <patch file="graphviz-remove-rpath.patch"
+             strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="pango" />
+      <dep package="librsvg" />
+    </dependencies>
+  </cmake>
+  <!---->
+  <autotools id="vala"
+             autogen-sh="configure">
+    <branch module="vala/0.56/vala-0.56.8.tar.xz"
+            version="0.56.8"
+            hash="sha256:93f81dcfc6a93b77baa271d65e6be981ee3238ad451ef380af118e295d904bde" />
+    <dependencies>
+      <dep package="graphviz" />
+      <dep package="meta-gtk-osx-bootstrap" />
+      <dep package="meta-gtk-osx-gtk3" />
+    </dependencies>
+  </autotools>
+  <!---->
+  <autotools id="itstool"
+             autogen-sh="configure">
+    <branch module="itstool/itstool-2.0.7.tar.bz2"
+            version="2.0.7"
+            hash="sha256:6b9a7cd29a12bb95598f5750e8763cee78836a1a207f85b74d8b3275b27e87ca"
+            repo="itstool" />
+    <dependencies>
+      <dep package="libxml2" />
+    </dependencies>
+  </autotools>
+  <!--
+    gtksourceview got a major version ahead: 4.x.x supports recent versions
+    of gtk+-3 and 5.x.x is for gtk4.
+  -->
+  <meson id="gtksourceview3">
+    <branch module="gtksourceview/4.8/gtksourceview-4.8.4.tar.xz"
+            version="4.8.4"
+            hash="sha256:7ec9d18fb283d1f84a3a3eff3b7a72b09a10c9c006597b3fbabbb5958420a87d">
+    </branch>
+    <dependencies>
+      <dep package="gtk+-3.0" />
+      <dep package="vala" />
+    </dependencies>
+  </meson>
+  <!---->
+  <meson id="gsettings-desktop-schemas">
+    <branch module="gsettings-desktop-schemas/44/gsettings-desktop-schemas-44.0.tar.xz"
+            version="44.0"
+            hash="sha256:eb2de45cad905994849e642a623adeb75d41b21b0626d40d2a07b8ea281fec0e" />
+    <dependencies>
+      <dep package="gobject-introspection" />
+    </dependencies>
+  </meson>
+  <!--
+    SQLite3 is also available from the macOS SDK
+  -->
+  <autotools id="sqlite"
+             autogen-sh="configure"
+             autogenargs="--disable-tcl --enable-threadsafe">
+    <branch module="2023/sqlite-autoconf-3420000.tar.gz"
+            version='3.42.0'
+            hash="sha256:7abcfd161c6e2742ca5c6c0895d1f853c940f203304a0b49da4e1eca5d088ca6"
+            repo="sqlite" />
+  </autotools>
+  <!---->
+  <autotools id="hunspell"
+             autogen-sh="autoreconf">
+    <branch module="hunspell/hunspell/archive/v1.7.2.tar.gz"
+            version="1.7.2"
+            hash="sha256:69fa312d3586c988789266eaf7ffc9861d9f6396c31fc930a014d551b59bbd6e"
+            checkoutdir="hunspell-1.7.2"
+            rename-tarball="hunspell-1.7.2.tar.gz"
+            repo="github-tarball" />
+  </autotools>
+  <!---->
+  <autotools id="enchant"
+             autogen-sh="configure"
+             autogenargs="--enable-relocatable">
+    <branch module="AbiWord/enchant/releases/download/v2.5.0/enchant-2.5.0.tar.gz"
+            version="2.5.0"
+            hash="sha256:149e224cdd2ca825d874639578b6246e07f37d5b8f3970658a377a1ef46f2e15"
+            repo="github-tarball">
+      <patch file="enchant-no_groff.patch"
+             strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="glib" />
+      <!--
+        Building groff reproducibly crashes Finder on Ventura. WTF?
+        <dep package="groff" />
+      -->
+    </dependencies>
+    <after>
+      <dep package="hunspell" />
+    </after>
+  </autotools>
+  <!--
+    GNU roff https://www.gnu.org/software/groff
+  -->
+  <autotools id="groff"
+             autogen-sh="configure"
+             autogenargs="--program-prefix=g --without-x --disable-rpath">
+             
+    <branch module="groff/groff-1.23.0.tar.gz"
+            version="1.23.0"
+            hash="sha256:6b9757f592b7518b4902eb6af7e54570bdccba37a871fddb2d30ae3863511c13"
+            repo="ftp.gnu.org" />
+  </autotools>
+  <!---->
+  <autotools id="iso-codes"
+             autogen-sh="configure">
+    <branch module="049ce6aac94d842be809f4063950646c/iso-codes-4.1.tar.xz"
+            version="4.1"
+            hash="sha256:67117fb76f32c8fb5e37d2d60bce238f1f8e865cc7b569a57cbc3017ca15488a"
+            repo="iso-codes" />
+  </autotools>
+  <!---->
+  <autotools id="libxml2"
+             autogen-sh="autoreconf"
+             autogenargs='--libdir="$JHBUILD_LIBDIR" --with-python'>
+             
+    <branch module="libxml2/2.11/libxml2-2.11.4.tar.xz"
+            version="2.11.4"
+            hash="sha256:737e1d7f8ab3f139729ca13a2494fd17bf30ddb4b7a427cf336252cab57f57f7" />
+    <after>
+      <dep package="python3" />
+    </after>
+  </autotools>
+  <!---->
+</moduleset>

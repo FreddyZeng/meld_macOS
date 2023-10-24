@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2023 René de Hesselle <dehesselle@web.de>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+variables:
+  GIT_DEPTH: 1
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build
+
+include:
+  - remote: https://raw.githubusercontent.com/dehesselle/sdkchecksum/master/.gitlab-ci/verify_sdk-template.yml
+
+#------------------------------------------------------------------------- build
+
+build:
+  stage: build
+  parallel:
+    matrix:
+      - RUNNER: [ "macosintel", "macosarm" ]
+  rules:
+    - if: $RUNNER == "macosintel"
+      variables:
+        SDKROOT: /opt/sdks/MacOSX10.13.4.sdk
+    - if: $RUNNER == "macosarm"
+      variables:
+        SDKROOT: /opt/sdks/MacOSX11.3.sdk
+  tags:
+    - ${RUNNER}
+  variables:
+    MELD_BUILD: $CI_PIPELINE_IID
+  script:
+    - !reference [ .verify_sdk, script ]
+    - ./build_toolset.sh
+    - ./build_meld.sh
+  after_script:
+    # For persistent runners: cleanup afterwards.
+    - |
+      source jhb/etc/jhb.conf.sh
+      rm -rf $VER_DIR
+  artifacts:
+    paths:
+      - Meld*.dmg

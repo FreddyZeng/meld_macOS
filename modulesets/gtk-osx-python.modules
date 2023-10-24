@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<!DOCTYPE moduleset SYSTEM "moduleset.dtd">
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<moduleset>
+  <!--
+    Please format this file using https://github.com/htacg/tidy-html5
+
+        tidy -config tidy.conf -m gtk-osx-python.modules
+  -->
+  <repository name="download.gnome.org"
+              default="yes"
+              href="https://download.gnome.org/sources/"
+              type="tarball" />
+  <repository name="python"
+              href="https://www.python.org/ftp/python/"
+              type="tarball" />
+  <repository name="pymodules"
+              href="https://pypi.python.org/packages/"
+              type="tarball" />
+  <repository name="github-tarball"
+              href="https://github.com"
+              type="tarball" />
+  <!---->
+  <include href="../jhb/gtk-osx-python.modules" />
+  <!---->
+  <meson id="pycairo">
+    <branch module="pygobject/pycairo/releases/download/v1.24.0/pycairo-1.24.0.tar.gz"
+            version="1.24.0"
+            hash="sha256:1444d52f1bb4cc79a4a0c0fe2ccec4bd78ff885ab01ebe1c0f637d8392bcafb6"
+            repo="github-tarball" />
+    <dependencies>
+      <dep package="cairo" />
+      <dep package="python3" />
+      <dep package="meta-gtk-osx-gtk3" />
+    </dependencies>
+  </meson>
+  <!---->
+  <meson id="pygobject3">
+    <branch module="pygobject/3.44/pygobject-3.44.1.tar.xz"
+            version="3.44.1"
+            hash="sha256:3c6805d1321be90cc32e648215a562430e0d3d6edcda8f4c5e7a9daffcad5710" />
+    <dependencies>
+      <dep package="pycairo" />
+    </dependencies>
+    <after>
+      <dep package="python3" />
+    </after>
+  </meson>
+  <!---->
+  <autotools id="gtk-mac-integration-python"
+             autogen-sh="configure"
+             autogenargs="--enable-python">
+    <branch module="gtk-mac-integration/3.0/gtk-mac-integration-3.0.1.tar.xz"
+            version="3.0.1"
+            hash="sha256:f19e35bc4534963127bbe629b9b3ccb9677ef012fc7f8e97fd5e890873ceb22d">
+
+      <patch file="gtk-mac-integration-work-around-svg-locale-bug.patch"
+             strip="1" />
+    </branch>
+    <after>
+      <dep package="pygobject3" />
+    </after>
+  </autotools>
+  <!---->
+  <distutils id="docutils">
+    <branch module="57/b1/b880503681ea1b64df05106fc7e3c4e3801736cf63deffc6fa7fc5404cf5/docutils-0.18.1.tar.gz"
+            version="0.18.1"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="gidocgen">
+    <branch module="25/11/64ea759ba610d7442e8827306d1adba233ca69547d2a0e974f5ea74fa320/gi-docgen-2022.1.tar.gz"
+            version="2022.1"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+      <dep package="markdown" />
+      <dep package="markupsafe" />
+      <dep package="typogrify" />
+      <dep package="jinja2" />
+      <dep package="toml" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="markdown">
+    <branch module="15/06/d60f21eda994b044cbd496892d4d4c5c708aa597fcaded7d421513cb219b/Markdown-3.3.6.tar.gz"
+            version="3.3.6"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="markupsafe">
+    <branch module="1d/97/2288fe498044284f39ab8950703e88abbac2abbdf65524d576157af70556/MarkupSafe-2.1.1.tar.gz"
+            version="2.1.1"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="typogrify">
+    <branch module="8a/bf/64959d6187d42472acb846bcf462347c9124952c05bd57e5769d5f28f9a6/typogrify-2.0.7.tar.gz"
+            version="2.0.7"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+      <dep package="smartypants" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="jinja2">
+    <branch module="89/e3/b36266381ae7a1310a653bb85f4f3658c462a69634fa9b2fef76252a50ed/Jinja2-3.1.1.tar.gz"
+            version="3.1.1"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="toml">
+    <branch module="be/ba/1f744cdc819428fc6b5084ec34d9b30660f6f9daaf70eead706e3203ec3c/toml-0.10.2.tar.gz"
+            version="0.10.2"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="smartypants">
+    <branch module="leohemsted/smartypants.py/archive/refs/tags/v2.0.1.tar.gz"
+            version="2.0.1"
+            checkoutdir="smartypants-2.0.1"
+            rename-tarball="smartypants-2.0.1.tar.gz"
+            repo="github-tarball" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+  <distutils id="wheel">
+    <branch module="a4/99/78c4f3bd50619d772168bec6a0f34379b02c19c9cced0ed833ecd021fd0d/wheel-0.41.2.tar.gz"
+            version="0.41.2"
+            hash="sha256:0c5ac5ff2afb79ac23ab82bab027a0be7b5dbcf2e54dc50efe4bf507de1f7985"
+            repo="pymodules" />
+    <dependencies>
+      <dep package="python3" />
+    </dependencies>
+  </distutils>
+  <!---->
+</moduleset>

@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE moduleset SYSTEM "moduleset.dtd">
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<moduleset>
+  <!--
+    Please format this file using https://github.com/htacg/tidy-html5
+
+        tidy -config tidy.conf -m meld.modules
+  -->
+  <repository name="github"
+              href="https://github.com/"
+              type="tarball" />
+  <repository name="gnome_ftp"
+              href="https://ftp.fau.de/gnome/sources/"
+              type="tarball" />
+  <repository name="gnome_gitlab"
+              href="https://gitlab.gnome.org/GNOME/"
+              type="tarball" />
+  <!---->
+  <include href="gtk-osx.modules" />
+  <include href="gtk-osx-python.modules" />
+  <include href="gtk-osx-random.modules" />
+  <!--
+    Spell checking for GTK https://wiki.gnome.org/Projects/gspell
+  -->
+  <autotools id="gspell"
+             autogen-sh="autoreconf">
+    <branch module="gspell/1.11/gspell-1.11.1.tar.xz"
+            version="1.11.1"
+            hash="sha256:ef6aa4e3f711775158a7e241a5f809cf2426bc0e02c23a7d2b5c71fc3de00292"
+            repo="gnome_ftp">
+      <patch file="gspell_makefile_objc.patch"
+             strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="enchant" />
+      <dep package="glib" />
+      <dep package="gtk+-3.0" />
+      <dep package="iso-codes" />
+      <dep package="vala" />
+    </dependencies>
+  </autotools>
+  <!--
+    GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
+
+    Patch mocks autotools interface to the extent that it provides a
+    "configure", but the "make install" is still broken and needs to
+    be skipped.
+  -->
+  <autotools id="gtkmacbundler"
+             autogen-sh="configure"
+             makeargs="&amp;&amp; make install"
+             skip-install="yes"
+             supports-non-srcdir-builds="no">
+    <branch module="gtk-mac-bundler/-/archive/6dd89ea6/gtk-mac-bundler-6dd89ea6.tar.bz2"
+            version="6dd89ea6"
+            hash="sha256:ef70eba556679cae60d954b52f31c9936d0ca17e27ee7f71380936e1c3545c6b"
+            checkoutdir="gtk-mac-bundler_6dd89ea6"
+            rename-tarball="gtk-mac-bundler_6dd89ea6.tar.bz2"
+            repo="gnome_gitlab">
+      <patch file="gtk-mac-bundler_autotools.patch"
+             strip="1" />
+    </branch>
+  </autotools>
+  <!--
+    ImageMagick https://imagemagick.org
+  -->
+  <autotools id="imagemagick"
+             autogen-sh="configure">
+    <branch module="ImageMagick/ImageMagick/archive/refs/tags/7.1.0-13.tar.gz"
+            version="7.1.0-13"
+            hash="sha256:7272dbf89734a30b3e1801dffcd6139c771bb9ab5de1abd3ec9efa3798fdfc0c"
+            checkoutdir="ImageMagick-7.1.0-13"
+            rename-tarball="ImageMagick-7.1.0-13.tar.gz"
+            repo="github" />
+    <dependencies>
+      <dep package="pango" />
+    </dependencies>
+  </autotools>
+  <!---->
+  <!-- TODO: hash is missing -->
+  <meson id="meld">
+    <branch module="meld/-/archive/3.22.0/meld-3.22.0.tar.bz2"
+            version="3.22.0"
+            repo="gnome_gitlab">
+    </branch>
+    <dependencies>
+      <dep package="meta-zim-dependencies" />
+    </dependencies>
+  </meson>
+  <!---->
+  <metamodule id="meta-meld-dependencies">
+    <dependencies>
+      <dep package="itstool" />
+      <!-- interfact to GObject -->
+      <dep package="pygobject3" />
+      <!-- setup.py won't run without -->
+      <dep package="python3" />
+      <!-- for code plugins -->
+      <dep package="gtksourceview3" />
+    </dependencies>
+  </metamodule>
+  <!--
+    Rust https://www.rust-lang.org
+
+    Rust has a custom setup routine (rustup) which is wrapped into
+    a cmake file introduced by that patch below.
+  -->
+  <cmake id="rust"
+         cmakeargs="-DVERSION=1.67.1"
+         supports-non-srcdir-builds="no"
+         use-ninja="no">
+    <branch module="rust-lang/rustup/archive/1.25.2.tar.gz"
+            version="1.25.2"
+            hash="sha256:dc9bb5d3dbac5cea9afa9b9c3c96fcf644a1e7ed6188a6b419dfe3605223b5f3"
+            checkoutdir="rustup-1.25.2"
+            rename-tarball="rustup-1.25.2.tar.gz"
+            repo="github">
+      <patch file="rust_cmake_install.patch"
+             strip="1" />
+    </branch>
+  </cmake>
+  <!---->
+</moduleset>

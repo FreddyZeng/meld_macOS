@@ -1,0 +1,32 @@
+--- a/configure	2021-07-25 14:35:15.000000000 +0200
++++ b/configure	2021-07-25 14:36:32.000000000 +0200
+@@ -0,0 +1,29 @@
++#!/usr/bin/env bash
++
++# This mocks a configure script to provide an autotools-like interface for
++# JHBuild.
++# We're only interested in the prefix and setting a Python interpretor.
++
++while [ "$#" -gt 0 ]; do
++  case $1 in
++    --prefix=*)       PREFIX=${1:9}; break ;;
++    --with-python=*)  WITH_PYTHON=${1:14}; break ;;
++    *)                echo "ignoring parameter: $1" ;;
++  esac
++  shift
++done
++
++if [ -z "$PREFIX" ]; then
++  echo "--prefix=* argument not found"
++  exit 1
++else
++  sed -i "" "/bindir=/a\\
++    bindir=$PREFIX\/bin\\
++    " Makefile
++fi
++
++if [ -n "$WITH_PYTHON" ]; then
++  sed -i "" \
++    "1 s/.*/#!$(echo "$WITH_PYTHON" | sed -e 's/[\/&]/\\&/g')/" \
++    gtk-mac-bundler.in
++fi
