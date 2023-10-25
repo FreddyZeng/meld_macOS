@@ -28,7 +28,7 @@ MELD_APP_PLIST=$MELD_APPCON_DIR/Info.plist
 
 MELD_VER=$(
   xmllint \
-    --xpath "string(//moduleset/distutils[@id='meld']/branch/@version)" \
+    --xpath "string(//moduleset/meson[@id='meld']/branch/@version)" \
     "$ETC_DIR"/modulesets/meld/meld.modules
 )
 
