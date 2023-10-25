@@ -1,0 +1,26 @@
+--- a/bin/meld	2023-10-25 18:58:13
++++ b/bin/meld	2023-10-25 18:54:49
+@@ -63,8 +63,8 @@
+         return os.path.dirname(sys.executable)
+ 
+     # Support running from an uninstalled version
+-    self_path = os.path.realpath(__file__)
+-    return os.path.abspath(os.path.join(os.path.dirname(self_path), ".."))
++    self_path = os.path.realpath(f"{sys.executable}")
++    return os.path.abspath(os.path.join(os.path.dirname(self_path), "../Resources"))
+ 
+ 
+ frozen = getattr(sys, 'frozen', False)
+--- a/meld/conf.py.in	2022-09-04 06:26:14
++++ b/meld/conf.py.in	2023-10-25 19:31:48
+@@ -21,8 +21,8 @@
+ 
+ if CONFIGURED == 'True':
+     APPLICATION_ID = '@application_id@'
+-    DATADIR = '@pkgdatadir@'
+-    LOCALEDIR = '@localedir@'
++    DATADIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.executable)), "../Resources/share/meld"))
++    LOCALEDIR = os.path.abspath(os.path.join(os.path.dirname(DATADIR), "locale"))
+     PROFILE = '@profile@'
+ 
+ # Flag enabling some workarounds if data dir isn't installed in standard prefix

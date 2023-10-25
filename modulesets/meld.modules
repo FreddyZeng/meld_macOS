@@ -78,11 +78,13 @@
     </dependencies>
   </autotools>
   <!---->
-  <!-- TODO: hash is missing -->
   <meson id="meld">
     <branch module="meld/-/archive/3.22.0/meld-3.22.0.tar.bz2"
             version="3.22.0"
+            hash="sha256:7feef3f69fb1b533181bd106f0e1e13a460fada44f702a2b9640dbab69881635"
             repo="gnome_gitlab">
+      <patch file="meld-app.patch"
+             strip="1" />
     </branch>
     <dependencies>
       <dep package="meta-zim-dependencies" />
