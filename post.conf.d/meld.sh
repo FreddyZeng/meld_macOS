@@ -72,6 +72,12 @@ MELD_PYTHON_PKG_XDOT=xdot==1.3
 
 ### functions ##################################################################
 
+function meld_get_version_from_plist
+{
+  /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
+    "$MELD_APP_PLIST"
+}
+
 function meld_pipinstall
 {
   local packages=$1     # name of variable that resolves to list of packages

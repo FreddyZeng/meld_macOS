@@ -111,9 +111,9 @@
   <data>
     ${prefix}/share/gtksourceview-4
   </data>
-  <!-- TODO: unversioned path -->
+  <!-- attention: versoion-less ource path -->
   <data dest="${bundle}/Contents/Resources/share/icons/hicolor">
-    ${prefix}/usr/src/meld-3.22.0/data/icons/hicolor
+    ${prefix}/usr/src/meld/data/icons/hicolor
   </data>
   <data>
     ${prefix}/share/glib-2.0
@@ -131,8 +131,8 @@
        /Developer/Applications/Utilities/Icon Composer.app to import
        artwork and create the file.
   -->
-  <data dest="${bundle}/Contents/Resources">
-    ${project}/../resources/meld.icns
+  <data dest="${bundle}/Contents/Resources/Meld.icns">
+    ${project}/../resources/meld_devel.icns
   </data>
 
   <!-- Icon themes to copy. The "icons" property can be either of

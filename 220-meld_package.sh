@@ -79,6 +79,7 @@ meld_install_python "$TMP_DIR"
 (
   cd "$SELF_DIR" || exit 1
   export ARTIFACT_DIR # is referenced in meld.bundle
+  gln -sfT "$SRC_DIR"/meld-* "$SRC_DIR"/meld # version-less dir in meld.bundle
 
   jhb run gtk-mac-bundler resources/meld.bundle
 )
@@ -115,8 +116,12 @@ lib_change_siblings "$MELD_APP_LIB_DIR"
 /usr/libexec/PlistBuddy -c "Add NSRequiresAquaSystemAppearance bool 'false'" \
   "$MELD_APP_PLIST"
 
-# set minimum OS version
-/usr/libexec/PlistBuddy -c "Set LSMinimumSystemVersion '$SYS_SDK_VER'" \
+# update minimum system version according to deployment target
+if [ -z "$MACOSX_DEPLOYMENT_TARGET" ]; then
+  MACOSX_DEPLOYMENT_TARGET=$SYS_SDK_VER
+fi
+/usr/libexec/PlistBuddy \
+  -c "Set LSMinimumSystemVersion $MACOSX_DEPLOYMENT_TARGET" \
   "$MELD_APP_PLIST"
 
 # set Meld version
@@ -126,11 +131,11 @@ lib_change_siblings "$MELD_APP_LIB_DIR"
 
 # set copyright
 /usr/libexec/PlistBuddy -c "Set NSHumanReadableCopyright 'Copyright © \
-2008-2022 Jaap Karssenberg.'" "$MELD_APP_PLIST"
+2009-2022 Kai Willadsen'" "$MELD_APP_PLIST"
 
 # set app category
 /usr/libexec/PlistBuddy -c \
-  "Add LSApplicationCategoryType string 'public.app-category.utilities'" \
+  "Add LSApplicationCategoryType string 'public.app-category.developer-tools'" \
   "$MELD_APP_PLIST"
 
 # set folder access descriptions

@@ -39,12 +39,16 @@ error_trace_enable
 #------------------------------------------------------------- create disk image
 
 convert \
-  -size 440x404 xc:transparent \
-  -font Monaco -pointsize 32 -fill black \
-  -draw "text 20,60 'Meld $MELD_VER'" \
-  -draw "text 20,100 'build $MELD_BUILD'" \
+  -size 440x404 canvas:transparent \
+  -font /System/Library/Fonts/Monaco.ttf -pointsize 32 -fill black \
+  -draw "text 90,55 'Meld $(meld_get_version_from_plist)'" \
   -draw "text 165,172 '>>>'" \
-  -draw "text 20,275 'unsigned PRE-RELEASE'" \
+  -pointsize 18 \
+  -draw "text 90,80 'build $MELD_BUILD'" \
+  -fill red \
+  -draw "text 40,275 'This is an unsigned pre-release!'" \
+  -pointsize 14 \
+  -draw "text 40,292 'xattr -r -d com.apple.quarantine Meld.app'" \
   "$SRC_DIR"/meld_dmg.png
 
 dmgbuild_run "$SELF_DIR"/resources/meld_dmg.py "$MELD_APP_PLIST"
