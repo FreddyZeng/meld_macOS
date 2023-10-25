@@ -39,3 +39,7 @@ error_trace_enable
 #------------------------------------------------------------------ install Meld
 
 jhb build meld
+
+# add build number to __version__ to AboutDialog and CLI help
+gsed -i "s/__version__/__version__ + ' ($MELD_BUILD)'/g" \
+  "$LIB_DIR"/python*/site-packages/meld/meldapp.py
