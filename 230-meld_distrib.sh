@@ -46,7 +46,7 @@ convert \
   -pointsize 18 \
   -draw "text 90,80 'build $MELD_BUILD'" \
   -fill red \
-  -draw "text 40,275 'This is an unsigned pre-release!'" \
+  -draw "text 40,275 'Unsigned development version!'" \
   -pointsize 14 \
   -draw "text 40,292 'xattr -r -d com.apple.quarantine Meld.app'" \
   "$SRC_DIR"/meld_dmg.png
