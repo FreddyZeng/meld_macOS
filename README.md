@@ -5,18 +5,11 @@
 
 TODO: screenshot
 
-~~This project aspires to become the official macOS release for [Meld](https://meld.app)~~. The app is standalone, relocatable and supports macOS High Sierra up to macOS Ventura.
+This project builds a macOS app for [Meld](https://meld.app). It's unclear at this point if I'll finish working on this.
 
 ## download
 
 Downloads are available in the [Releases](https://gitlab.com/dehesselle/meld_macos/-/releases) section.
-
-## contact
-
-Please use the official channels:
-
-- report issues to Meld's [issue tracker](https://gitlab.gnome.org/GNOME/meld/-/issues)
-- ask questions in Meld's [Discourse](https://discourse.gnome.org/tag/meld)
 
 ## license
 
