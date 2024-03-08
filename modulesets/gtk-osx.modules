@@ -356,6 +356,7 @@
       <dep package="freetype" />
       <dep package="docutils" />
       <dep package="gidocgen" />
+      <dep package="pygments" />
       <dep package="rust" />
     </dependencies>
     <after>
