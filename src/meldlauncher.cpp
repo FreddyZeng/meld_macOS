@@ -116,37 +116,6 @@ static void setup_environment() {
     setenv("LANG", std::string(locale).append(".UTF-8"));
   }
 
-  // set theme
-  if (getenv("GTK_THEME") == nullptr) {
-    bool has_gtkthemename = false;
-    INI::File gtksettings;
-    // check GTK's settings.ini if theme setting is present
-    if (gtksettings.Load(SETTINGS_DIR + "/gtk-3.0/settings.ini")) {
-      auto section = gtksettings.GetSection("Settings");
-      if (section) {
-        if (not section->GetValue("gtk-theme-name").AsString().empty()) {
-          has_gtkthemename = true;
-        }
-      }
-    }
-
-    if (not has_gtkthemename) {  // if not configured in GTK's settings.ini,
-                                 // set to system theme
-      auto pref = CFPreferencesCopyValue(
-          CFSTR("AppleInterfaceStyle"), kCFPreferencesAnyApplication,
-          kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
-
-      if (pref) {
-        if (CFGetTypeID(pref) == CFStringGetTypeID())
-          if (CFStringCompare((CFStringRef)pref, CFSTR("Dark"), 0) ==
-              kCFCompareEqualTo)
-            setenv("GTK_THEME", "Adwaita:dark");
-
-        CFRelease(pref);
-      }
-    }
-  }
-
   // an (optional) ini file can be used to set/override environment variables
   INI::File ini;
   if (ini.Load(SETTINGS_DIR + "/meldapp.ini")) {
