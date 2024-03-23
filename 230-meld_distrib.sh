@@ -40,7 +40,7 @@ error_trace_enable
 
 convert \
   -size 440x404 canvas:transparent \
-  -font /System/Library/Fonts/Monaco.ttf -pointsize 32 -fill black \
+  -font Monaco -pointsize 32 -fill black \
   -draw "text 90,55 'Meld $(meld_get_version_from_plist)'" \
   -draw "text 165,172 '>>>'" \
   -pointsize 18 \
