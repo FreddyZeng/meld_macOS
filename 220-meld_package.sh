@@ -39,13 +39,6 @@ error_trace_enable
 
 #---------------------------------------------------------------- build launcher
 
-# Turn "Meld main program" into a C header file.
-(
-  cd "$BIN_DIR" || exit 1
-  xxd -i meld >"$SRC_DIR"/meld.h
-)
-
-# Build our C++ program to launch Python w/ Meld.
 meld_install_python "$TMP_DIR"
 (
   if [ "$(uname -m)" = "x86_64" ]; then
@@ -53,6 +46,7 @@ meld_install_python "$TMP_DIR"
     # (needs to be >=11.x) and set the deployment target to achieve backward
     # compatibility.
     # https://gitlab.gnome.org/GNOME/gtk/-/issues/5305#note_1673947
+    # shellcheck disable=SC2030 # subshell-specific environment modification
     MACOSX_DEPLOYMENT_TARGET=$(
       /usr/libexec/PlistBuddy -c \
         "Print DefaultProperties:MACOSX_DEPLOYMENT_TARGET" \
@@ -65,12 +59,10 @@ meld_install_python "$TMP_DIR"
   g++ \
     -std=c++11 \
     -o "$BIN_DIR"/meldlauncher \
-    -I"$SRC_DIR" \
     -I"$TMP_DIR"/Python.framework/Headers \
-    -I"$SELF_DIR"/src \
     "$SELF_DIR"/src/meldlauncher.cpp \
     -framework CoreFoundation \
-    -F "$TMP_DIR" \
+    -F"$TMP_DIR" \
     -framework Python
 )
 
@@ -97,6 +89,13 @@ mv "$TMP_DIR"/site-packages "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
 # install Python.framework into bundle
 meld_install_python
 rm -rf "$MELD_APP_LIB_DIR"/python"$MELD_PYTHON_VER"/test
+
+#------------------------------------------------------ install Meld main script
+
+cp "$BIN_DIR"/meld \
+  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld"
+chmod 644 \
+  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld/meld"
 
 #------------------------------------------------------- install Python packages
 
