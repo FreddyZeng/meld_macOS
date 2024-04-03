@@ -3,7 +3,7 @@
 ![GitLab master branch](https://gitlab.com/dehesselle/meld_macos/badges/main/pipeline.svg)
 ![Latest Release](https://img.shields.io/gitlab/v/release/dehesselle/meld_macos?sort=semver&color=2f699b&label=Latest%20Release)
 
-TODO: screenshot
+![screenshot](resources/screenshot.png)
 
 This project builds a macOS app for [Meld](https://meld.app). The app is standalone, relocatable and supports macOS High Sierra up to macOS Sonoma.
 
