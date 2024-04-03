@@ -21,26 +21,6 @@
   <include href="gtk-osx-python.modules" />
   <include href="gtk-osx-random.modules" />
   <!--
-    Spell checking for GTK https://wiki.gnome.org/Projects/gspell
-  -->
-  <autotools id="gspell"
-             autogen-sh="autoreconf">
-    <branch module="gspell/1.11/gspell-1.11.1.tar.xz"
-            version="1.11.1"
-            hash="sha256:ef6aa4e3f711775158a7e241a5f809cf2426bc0e02c23a7d2b5c71fc3de00292"
-            repo="gnome_ftp">
-      <patch file="gspell_makefile_objc.patch"
-             strip="1" />
-    </branch>
-    <dependencies>
-      <dep package="enchant" />
-      <dep package="glib" />
-      <dep package="gtk+-3.0" />
-      <dep package="iso-codes" />
-      <dep package="vala" />
-    </dependencies>
-  </autotools>
-  <!--
     GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
 
     Patch mocks autotools interface to the extent that it provides a

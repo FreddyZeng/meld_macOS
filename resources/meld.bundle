@@ -42,15 +42,6 @@
     ${prefix}/bin/meldlauncher
   </main-binary>
 
-  <!-- Gtk+ is required by python modules which aren't searched for
-       dependencies, so we have to pull it in explicitly. It will
-       bring Pango and Cairo with it. Note the use of ${gtkversion},
-       which expands to either 2.0 or 3.0, depending on which value of
-       gtk is specified.-->
-  <binary>
-    ${prefix}/lib/libgtkmacintegration-gtk3.dylib
-  </binary>
-
   <!-- Copy in GTK+ modules. Note the ${gtkdir} macro, which expands
        to the correct library subdirectory for the specified gtk
        version.
@@ -91,9 +82,6 @@
     ${prefix}/share/locale
   </translations>
   <translations name="gtksourceview-4">
-    ${prefix}/share/locale
-  </translations>
-  <translations name="gtk-mac-integration">
     ${prefix}/share/locale
   </translations>
 
