@@ -44,31 +44,12 @@ python_macos/v19/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
 
 #--------------------------------------- Python packages to be bundled with Meld
 
-# https://pypi.org/project/numpy/
-MELD_PYTHON_PKG_NUMPY="\
-  https://files.pythonhosted.org/packages/e3/63/fd76159cb76c682171e3bf50ed0ee8704103035a9347684a2ec0914b84a1/numpy-1.26.1-cp310-cp310-macosx_11_0_arm64.whl\
-  https://files.pythonhosted.org/packages/34/11/055802bf85abbb61988e6313e8b0a85167ee0795fc2c6141ee5b539e7b11/numpy-1.26.1-cp310-cp310-macosx_10_9_x86_64.whl\
-"
-
-# https://pypi.org/project/Pillow/
-MELD_PYTHON_PKG_PILLOW=Pillow==10.1.0
-
 # https://pypi.org/project/pycairo/
 # https://pypi.org/project/PyGObject/
 MELD_PYTHON_PKG_PYGOBJECT="\
   PyGObject==3.46.0\
   pycairo==1.25.0\
 "
-
-# https://pypi.org/project/pyenchant/
-# https://pypi.org/project/pygtkspellcheck/
-MELD_PYTHON_PKG_PYGTKSPELLCHECK="\
-  pyenchant==3.2.2\
-  pygtkspellcheck==5.0.0\
-"
-
-# https://pypi.org/project/xdot/
-MELD_PYTHON_PKG_XDOT=xdot==1.3
 
 ### functions ##################################################################
 
@@ -124,34 +105,6 @@ function meld_pipinstall
   fi
 }
 
-function meld_pipinstall_numpy
-{
-  local numpy_dir=$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/numpy
-
-  find "$numpy_dir" '(' -name "*.so" -o -name "*.dylib" ')' \
-    -exec codesign --remove-signature {} \;
-
-  find "$numpy_dir" -name "*.a" -delete
-
-  # remove libs intended for other architectures
-  for lib in "$numpy_dir"/.dylibs/*.dylib; do
-    if ! file "$lib" | grep "$(uname -m)"; then
-      rm "$lib"
-    fi
-  done
-
-  # remove CLI tools
-  rm "$MELD_APP_RES_DIR"/bin/f2py*
-}
-
-function meld_pipinstall_pillow
-{
-  lib_change_paths \
-    @loader_path/../../.. \
-    "$MELD_APP_LIB_DIR" \
-    "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/PIL/*.so
-}
-
 function meld_pipinstall_pygobject
 {
   # GObject Introspection
@@ -166,12 +119,6 @@ function meld_pipinstall_pygobject
     "$MELD_APP_LIB_DIR" \
     "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/cairo/\
 _cairo.cpython-${MELD_PYTHON_VER/./}-darwin.so
-}
-
-function meld_pipinstall_xdot
-{
-  ln -s dot "$MELD_APP_BIN_DIR"/fdp
-  rm "$MELD_APP_BIN_DIR"/xdot
 }
 
 function meld_download_python
