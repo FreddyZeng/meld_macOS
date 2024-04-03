@@ -116,6 +116,7 @@ lib_change_siblings "$MELD_APP_LIB_DIR"
   "$MELD_APP_PLIST"
 
 # update minimum system version according to deployment target
+# shellcheck disable=SC2031 # local environment change
 if [ -z "$MACOSX_DEPLOYMENT_TARGET" ]; then
   MACOSX_DEPLOYMENT_TARGET=$SYS_SDK_VER
 fi
@@ -154,7 +155,7 @@ for locale in "$SRC_DIR"/meld-*/*.po; do
     locale="en"
   fi
   /usr/libexec/PlistBuddy -c "Add CFBundleLocalizations: string \
-'$(basename -s .po $locale)'" "$MELD_APP_PLIST"
+'$(basename -s .po "$locale")'" "$MELD_APP_PLIST"
 done
 
 # add some metadata to make CI identifiable
