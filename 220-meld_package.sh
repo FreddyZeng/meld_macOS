@@ -70,7 +70,7 @@ meld_install_python "$TMP_DIR"
 
 (
   cd "$SELF_DIR" || exit 1
-  export ARTIFACT_DIR # is referenced in meld.bundle
+  export ART_DIR # is referenced in meld.bundle
   gln -sfT "$SRC_DIR"/meld-* "$SRC_DIR"/meld # version-less dir in meld.bundle
 
   jhb run gtk-mac-bundler resources/meld.bundle

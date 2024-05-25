@@ -17,7 +17,7 @@
 
 ### variables ##################################################################
 
-MELD_APPDIR=$ARTIFACT_DIR/Meld.app
+MELD_APPDIR=$ART_DIR/Meld.app
 MELD_APPCON_DIR=$MELD_APPDIR/Contents
 MELD_APP_RES_DIR=$MELD_APPCON_DIR/Resources
 MELD_APP_BIN_DIR=$MELD_APP_RES_DIR/bin
