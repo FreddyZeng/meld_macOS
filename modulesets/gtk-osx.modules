@@ -50,6 +50,8 @@
       - gtk-osx-python.modules: Python bindings for Gtk.
       - gtk-osx-random.modules: "random stuff", has apps for testing GTK+.
   -->
+  <include href="../jhb/gtk-osx-bootstrap.modules" />
+  <include href="gtk-osx-network.modules" />
   <include href="gtk-osx-python.modules" />
   <include href="gtk-osx-random.modules" />
   <!--

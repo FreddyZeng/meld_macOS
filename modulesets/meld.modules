@@ -18,8 +18,6 @@
               type="tarball" />
   <!---->
   <include href="gtk-osx.modules" />
-  <include href="gtk-osx-python.modules" />
-  <include href="gtk-osx-random.modules" />
   <!--
     GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
 
