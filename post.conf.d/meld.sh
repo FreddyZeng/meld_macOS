@@ -167,8 +167,8 @@ function meld_build_wheels
       # shellcheck disable=SC2086 # we need word splitting here
       jhb run pip3 wheel \
         --no-binary :all: --only-binary numpy \
-        $packages \
-        -w "$PKG_DIR"
+        -w "$PKG_DIR" \
+        $packages
       packages=""
     fi
   done
