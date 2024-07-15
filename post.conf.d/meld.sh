@@ -125,7 +125,9 @@ _cairo.cpython-${MELD_PYTHON_VER/./}-darwin.so
 
 function meld_download_python
 {
-  curl -o "$PKG_DIR"/"$(basename "${MELD_PYTHON_URL%\?*}")" -L "$MELD_PYTHON_URL"
+  curl -o "$PKG_DIR"/"$(basename "$MELD_PYTHON_URL")" -L "$MELD_PYTHON_URL"
+  # Exclude the above from cleanup procedure.
+  basename "$MELD_PYTHON_URL" >> "$PKG_DIR"/.keep
 }
 
 function meld_install_python
@@ -172,4 +174,8 @@ function meld_build_wheels
       packages=""
     fi
   done
+
+  # Exclude wheels from cleanup procedure.
+  find "$PKG_DIR" -type f -name '*.whl' \
+    -exec bash -c 'basename "$1" >> "${2:?}"/.keep' _ {} "$PKG_DIR" \;
 }
