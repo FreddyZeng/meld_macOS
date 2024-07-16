@@ -74,6 +74,7 @@
     <branch module="meld/-/archive/3.22.2/meld-3.22.2.tar.bz2"
             version="3.22.2"
             hash="sha256:c535ef1146fe455e6be86a783c88736ff9f7f6345388d84f71612e1e2cde7b5b"
+            checkoutdir="meld"
             repo="gnome_gitlab">
       <patch file="meld-app.patch"
              strip="1" />
