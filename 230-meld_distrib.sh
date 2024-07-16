@@ -51,4 +51,5 @@ convert \
   -draw "text 40,292 'xattr -r -d com.apple.quarantine Meld.app'" \
   "$SRC_DIR"/meld_dmg.png
 
+cp "$SELF_DIR"/resources/meld_dmg.icns "$SRC_DIR"
 dmgbuild_run "$SELF_DIR"/resources/meld_dmg.py "$MELD_APP_PLIST"
