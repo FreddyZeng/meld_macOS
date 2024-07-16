@@ -20,9 +20,6 @@
   <repository name="iso-codes"
               href="https://salsa.debian.org/iso-codes-team/iso-codes/uploads/"
               type="tarball" />
-  <repository name="graphviz"
-              href="https://gitlab.com/graphviz/graphviz/-/archive/"
-              type="tarball" />
   <repository name="sqlite"
               href="http://www.sqlite.org/"
               type="tarball" />
@@ -31,33 +28,6 @@
               type="tarball" />
   <!---->
   <include href="../jhb/gtk-osx-random.modules" />
-  <!---->
-  <cmake id="graphviz"
-         cmakeargs="-Dwith_gvedit=NO">
-    <branch module="8.0.5/graphviz-8.0.5.tar.bz2"
-            version="8.0.5"
-            hash="sha256:c1901fe52483fad55fbf893ccd59a3dcaedd53f0d50b5aebbbf3deaba93b674d"
-            repo="graphviz">
-      <patch file="graphviz-remove-rpath.patch"
-             strip="1" />
-    </branch>
-    <dependencies>
-      <dep package="pango" />
-      <dep package="librsvg" />
-    </dependencies>
-  </cmake>
-  <!---->
-  <autotools id="vala"
-             autogen-sh="configure">
-    <branch module="vala/0.56/vala-0.56.8.tar.xz"
-            version="0.56.8"
-            hash="sha256:93f81dcfc6a93b77baa271d65e6be981ee3238ad451ef380af118e295d904bde" />
-    <dependencies>
-      <dep package="graphviz" />
-      <dep package="meta-gtk-osx-bootstrap" />
-      <dep package="meta-gtk-osx-gtk3" />
-    </dependencies>
-  </autotools>
   <!---->
   <autotools id="itstool"
              autogen-sh="configure">
@@ -73,14 +43,14 @@
     gtksourceview got a major version ahead: 4.x.x supports recent versions
     of gtk+-3 and 5.x.x is for gtk4.
   -->
-  <meson id="gtksourceview3">
+  <meson id="gtksourceview3"
+         mesonargs="-Dvapi=false">
     <branch module="gtksourceview/4.8/gtksourceview-4.8.4.tar.xz"
             version="4.8.4"
             hash="sha256:7ec9d18fb283d1f84a3a3eff3b7a72b09a10c9c006597b3fbabbb5958420a87d">
     </branch>
     <dependencies>
       <dep package="gtk+-3.0" />
-      <dep package="vala" />
     </dependencies>
   </meson>
   <!---->
