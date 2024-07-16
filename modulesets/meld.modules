@@ -7,6 +7,9 @@
 
         tidy -config tidy.conf -m meld.modules
   -->
+  <repository name="freedesktop"
+              href="http://www.freedesktop.org/software/"
+              type="tarball" />
   <repository name="github"
               href="https://github.com/"
               type="tarball" />
@@ -18,6 +21,17 @@
               type="tarball" />
   <!---->
   <include href="gtk-osx.modules" />
+  <!---->
+  <meson id="desktop-file-utils">
+    <branch module="desktop-file-utils/releases/desktop-file-utils-0.27.tar.xz"
+            version="0.27"
+            hash="sha256:a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836"
+            repo="freedesktop" />
+    <dependencies>
+      <dep package="gettext" />
+      <dep package="glib" />
+    </dependencies>
+  </meson>
   <!--
     GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
 
@@ -71,13 +85,16 @@
   <!---->
   <metamodule id="meta-meld-dependencies">
     <dependencies>
+      <!-- required for the build -->
+      <dep package="desktop-file-utils" />
+      <!-- for code plugins -->
+      <dep package="gtksourceview3" />
+      <!---->
       <dep package="itstool" />
       <!-- interfact to GObject -->
       <dep package="pygobject3" />
       <!-- setup.py won't run without -->
       <dep package="python3" />
-      <!-- for code plugins -->
-      <dep package="gtksourceview3" />
     </dependencies>
   </metamodule>
   <!--
