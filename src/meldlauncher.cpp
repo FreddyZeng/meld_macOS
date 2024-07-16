@@ -10,7 +10,6 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <algorithm>
 
 // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/MacOSXDirectories/MacOSXDirectories.html
 static const std::string BUNDLE_IDENTIFIER = "org.gnome.Meld";
@@ -18,15 +17,13 @@ static const std::string SETTINGS_DIR = std::string(getenv("HOME")) +
                                         "/Library/Application Support/" +
                                         BUNDLE_IDENTIFIER;
 
-std::string get_program_dir()
-{
+std::string get_program_dir() {
   std::string result;
 
   uint32_t size = PATH_MAX + 1;
   char path[size];
 
-  if (_NSGetExecutablePath(path, &size) == 0)
-  {
+  if (_NSGetExecutablePath(path, &size) == 0) {
     result.assign(path);
     realpath(result.c_str(), path); // resolve symlink
     result = result.assign(path).substr(0, result.rfind("/"));
@@ -35,13 +32,11 @@ std::string get_program_dir()
   return result;
 }
 
-void setenv(const std::string &name, const std::string &value)
-{
+void setenv(const std::string &name, const std::string &value) {
   setenv(name.c_str(), value.c_str(), 1);
 }
 
-static void setup_environment()
-{
+static void setup_environment() {
   std::string program_dir = get_program_dir();
   std::string contents_dir;
   contents_dir.assign(program_dir).append("/.."); // <TheApp.app>/Contents
@@ -82,14 +77,16 @@ static void setup_environment()
   setenv("GI_TYPELIB_PATH", lib_dir + "/girepository-1.0");
 
   // Python site-packages
-  setenv("PYTHONPATH",
-         (std::stringstream()
+  setenv(
+      "PYTHONPATH",
+      (std::stringstream()
           << program_dir << "/../Resources/lib/python" << PY_MAJOR_VERSION
           << "." << PY_MINOR_VERSION << "/site-packages"
           << ":" << program_dir
           << "/../Frameworks/Python.framework/Versions/Current/lib/python"
-          << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION << "/site-packages")
-             .str());
+          << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION << "/site-packages"
+      ).str()
+  );
 
   // Python cache files (*.pyc)
   setenv("PYTHONPYCACHEPREFIX", cache_dir);
@@ -99,8 +96,7 @@ static void setup_environment()
 
   // set GUI language
   // https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-  if (getenv("LANG") == nullptr)
-  {
+  if (getenv("LANG") == nullptr) {
     CFLocaleRef cflocale = CFLocaleCopyCurrent();
     CFStringRef value =
         (CFStringRef)CFLocaleGetValue(cflocale, kCFLocaleIdentifier);
@@ -111,59 +107,63 @@ static void setup_environment()
   }
 }
 
-int main(int argc, char *argv[])
-{
+bool is_multiprocessing(const std::vector<std::string>& args) {
+  bool result = false;
+
+  if (args.size()                          >= 3 and
+      args[1].compare("-c")                == 0 and
+      args[2].find("from multiprocessing") != std::string::npos) {
+    result = true;
+  }
+
+  return result;
+}
+
+int main(int argc, char *argv[]) {
   int rc = 0;
-
-  // ---------------------------------------------------------------------- init
-
-  // prepend an additional argv[0] value
-  auto arguments = std::vector<std::string>(argv, argv + argc);
-  arguments.insert(arguments.begin(), argv[0]);
-  std::vector<const char *> new_argv(arguments.size());
-  std::transform(arguments.begin(), arguments.end(), new_argv.begin(),
-                 [](std::string &str)
-                 { return str.c_str(); });
 
   setup_environment();
 
-  PyStatus status;
-  PyConfig config;
-  PyConfig_InitPythonConfig(&config);
+  auto arguments = std::vector<std::string>(argv, argv + argc);
 
-  status = PyConfig_SetBytesArgv(&config,
-                                 new_argv.size(),
-                                 const_cast<char **>(new_argv.data()));
-  if (not PyStatus_Exception(status))
-  {
+  if (is_multiprocessing(arguments)) {
+    Py_Initialize();
+    rc = Py_BytesMain(argc, argv);
+  }
+  else {
+    PyStatus status;
+    PyConfig config;
+    PyConfig_InitPythonConfig(&config);
 
-    status = Py_InitializeFromConfig(&config);
-    if (not PyStatus_Exception(status))
-    {
+    arguments.insert(arguments.begin()+1, argv[0]);
+    std::vector<const char *> new_argv(arguments.size());
+    std::transform(arguments.begin(), arguments.end(), new_argv.begin(),
+        [](std::string &str) { return str.c_str(); }
+    );
 
-      // ------------------------------------------------------------------- run
+    status = PyConfig_SetBytesArgv(&config, new_argv.size(),
+        const_cast<char **>(new_argv.data()));
+    if (not PyStatus_Exception(status)) {
+      status = Py_InitializeFromConfig(&config);
+      if (not PyStatus_Exception(status)) {
+        std::string filename = (
+            std::stringstream() << get_program_dir() << "/../Resources/lib/"
+                                << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
+                                << "/site-packages/meld/meld"
+        ).str();
 
-      std::string filename = (std::stringstream()
-                              << get_program_dir() << "/../Resources/lib/"
-                              << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
-                              << "/site-packages/meld/meld")
-                                 .str();
+        FILE *program_file = fopen(filename.c_str(), "r");
+        rc = PyRun_SimpleFile(program_file, filename.c_str());
+        fclose(program_file);
 
-      FILE *program_file = fopen(filename.c_str(), "r");
-      rc = PyRun_SimpleFile(program_file, filename.c_str());
-      fclose(program_file);
+        if (PyStatus_Exception(status)) {
+          Py_ExitStatusException(status);
+        }
+      }
     }
+    PyConfig_Clear(&config);
   }
 
-  // ------------------------------------------------------------------- cleanup
-
-  if (PyStatus_Exception(status))
-  {
-    Py_ExitStatusException(status);
-  }
-
-  PyConfig_Clear(&config);
   Py_Finalize();
-
   return rc;
 }
