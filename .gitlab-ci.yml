@@ -38,8 +38,8 @@ build:
   after_script:
     # For persistent runners: cleanup afterwards.
     - |
-      source jhb/etc/jhb.conf.sh
-      rm -rf $VER_DIR
+      VER_DIR=$(jhb/usr/bin/config get VER_DIR)
+      rm -rf ${VER_DIR:?}
   artifacts:
     paths:
       - Meld*.dmg
