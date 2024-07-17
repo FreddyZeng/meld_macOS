@@ -105,7 +105,7 @@
     a cmake file introduced by that patch below.
   -->
   <cmake id="rust"
-         cmakeargs="-DVERSION=1.67.1"
+         cmakeargs="-DVERSION=1.79.0"
          supports-non-srcdir-builds="no"
          use-ninja="no">
     <branch module="rust-lang/rustup/archive/1.25.2.tar.gz"
