@@ -123,7 +123,8 @@ fi
   "$MELD_APP_PLIST"
 
 # set Meld version
-/usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString '$MELD_VER'" \
+/usr/libexec/PlistBuddy \
+  -c "Set CFBundleShortVersionString '$(meld_get_version_from_config)'" \
   "$MELD_APP_PLIST"
 /usr/libexec/PlistBuddy -c "Set CFBundleVersion '$MELD_BUILD'" "$MELD_APP_PLIST"
 

@@ -26,14 +26,6 @@ MELD_APP_LIB_DIR=$MELD_APP_RES_DIR/lib
 MELD_APPFRA_DIR=$MELD_APPCON_DIR/Frameworks
 MELD_APP_PLIST=$MELD_APPCON_DIR/Info.plist
 
-MELD_VER=$(
-  xmllint \
-    --xpath "string(//moduleset/meson[@id='meld']/branch/@version)" \
-    "$ETC_DIR"/modulesets/meld/meld.modules \
-    2>/dev/null ||
-    echo 0.0.0
-)
-
 MELD_BUILD=${MELD_BUILD:-0}
 
 #---------------------------------------- Python runtime to be bundled with Meld
@@ -59,6 +51,19 @@ function meld_get_version_from_plist
 {
   /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
     "$MELD_APP_PLIST"
+}
+
+function meld_get_version_from_config
+{
+  grep __version__ "$SRC_DIR"/meld/meld/conf.py.in | awk -F '"' '{ print $2 }'
+}
+
+function meld_get_version_from_module
+{
+  xmllint \
+    --xpath "string(//moduleset/meson[@id='meld']/branch/@version)" \
+    "$ETC_DIR"/modulesets/meld/meld.modules \
+    2>/dev/null
 }
 
 function meld_pipinstall
