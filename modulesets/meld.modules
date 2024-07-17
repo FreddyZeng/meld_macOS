@@ -13,9 +13,6 @@
   <repository name="github"
               href="https://github.com/"
               type="tarball" />
-  <repository name="gnome_ftp"
-              href="https://ftp.fau.de/gnome/sources/"
-              type="tarball" />
   <repository name="gnome_gitlab"
               href="https://gitlab.gnome.org/GNOME/"
               type="tarball" />
