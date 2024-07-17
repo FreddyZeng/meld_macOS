@@ -20,9 +20,6 @@
   <repository name="iso-codes"
               href="https://salsa.debian.org/iso-codes-team/iso-codes/uploads/"
               type="tarball" />
-  <repository name="sqlite"
-              href="http://www.sqlite.org/"
-              type="tarball" />
   <repository name="itstool"
               href="http://files.itstool.org/"
               type="tarball" />
@@ -62,17 +59,6 @@
       <dep package="gobject-introspection" />
     </dependencies>
   </meson>
-  <!--
-    SQLite3 is also available from the macOS SDK
-  -->
-  <autotools id="sqlite"
-             autogen-sh="configure"
-             autogenargs="--disable-tcl --enable-threadsafe">
-    <branch module="2023/sqlite-autoconf-3420000.tar.gz"
-            version='3.42.0'
-            hash="sha256:7abcfd161c6e2742ca5c6c0895d1f853c940f203304a0b49da4e1eca5d088ca6"
-            repo="sqlite" />
-  </autotools>
   <!---->
   <autotools id="iso-codes"
              autogen-sh="configure">
