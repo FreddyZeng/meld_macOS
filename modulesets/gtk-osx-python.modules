@@ -24,9 +24,9 @@
   <include href="../jhb/gtk-osx-python.modules" />
   <!---->
   <meson id="pycairo">
-    <branch module="pygobject/pycairo/releases/download/v1.26.0/pycairo-1.26.0.tar.gz"
-            version="1.26.0"
-            hash="sha256:2dddd0a874fbddb21e14acd9b955881ee1dc6e63b9c549a192d613a907f9cbeb"
+    <branch module="pygobject/pycairo/releases/download/v1.26.1/pycairo-1.26.1.tar.gz"
+            version="1.26.1"
+            hash="sha256:a11b999ce55b798dbf13516ab038e0ce8b6ec299b208d7c4e767a6f7e68e8430"
             repo="github-tarball" />
     <dependencies>
       <dep package="cairo" />
