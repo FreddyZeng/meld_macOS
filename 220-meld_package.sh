@@ -103,6 +103,21 @@ meld_pipinstall MELD_PYTHON_PKG_PYGOBJECT
 
 lib_change_siblings "$MELD_APP_LIB_DIR"
 
+#----------------------------------------------------- patch introspection files
+
+# Add the "@executeble_path/..." prefix to a second library in the
+# shared-library list.
+
+grep -n "dylib" "$MELD_APP_RES_DIR"/share/gir-1.0/*.gir |
+    grep "," |
+    awk -F":" '{ print $1 }' |
+    while IFS= read -r gir; do
+  gsed -i -E 's|,(.+\.dylib")|,@executable_path/../Resources/lib/\1|' "$gir"
+  jhb run g-ir-compiler \
+    -o "$MELD_APP_LIB_DIR/girepository-1.0/$(basename -s .gir "$gir")".typelib \
+    "$gir"
+done
+
 #------------------------------------------------------------- update Info.plist
 
 # enable HiDPI
