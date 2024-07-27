@@ -16,7 +16,8 @@ You probably want to just type `meld` to open it. There are different ways to se
 Add an alias to e.g. `~/.zshrc`:
 
 ```bash
-alias meld='/Applications/Meld.app/Contents/MacOS/Meld'
+# This command assumes you are using the ZSH shell.
+echo "alias meld='/Applications/Meld.app/Contents/MacOS/Meld'" >> ~/.zshrc
 ```
 
 Or create a wrapper script that is in your `$PATH`, e.g. in `/usr/local/bin`:
@@ -27,7 +28,7 @@ Or create a wrapper script that is in your `$PATH`, e.g. in `/usr/local/bin`:
 echo '/Applications/Meld.app/Contents/MacOS/Meld "$@"' > /usr/local/bin/meld
 ```
 
-💁 _Do not create a symlink instead of this wrapper, it doesn't work correctly._
+⚠️ Do not create a symlink, this isn't supported!
 
 ### as difftool
 
