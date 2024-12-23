@@ -17,19 +17,24 @@ static const std::string SETTINGS_DIR = std::string(getenv("HOME")) +
                                         "/Library/Application Support/" +
                                         BUNDLE_IDENTIFIER;
 
-std::string get_program_dir() {
-  std::string result;
-
-  uint32_t size = PATH_MAX + 1;
+std::string get_executable_path() {
+  uint32_t size = PATH_MAX;
   char path[size];
 
   if (_NSGetExecutablePath(path, &size) == 0) {
-    result.assign(path);
-    realpath(result.c_str(), path); // resolve symlink
-    result = result.assign(path).substr(0, result.rfind("/"));
+    auto path_canonical = std::unique_ptr<char[]>(new char[size]);
+    return std::string(realpath(path, path_canonical.get()));
   }
 
-  return result;
+  return std::string();
+}
+
+std::string get_program_dir() {
+  if (auto executable_path = get_executable_path(); not executable_path.empty()) {
+    return executable_path.substr(0, executable_path.rfind("/"));
+  }
+
+  return std::string();
 }
 
 void setenv(const std::string &name, const std::string &value) {
@@ -122,10 +127,13 @@ bool is_multiprocessing(const std::vector<std::string>& args) {
 int main(int argc, char *argv[]) {
   int rc = 0;
 
+  char canonical_path[PATH_MAX];
+  strcpy(canonical_path, get_executable_path().c_str());
+  argv[0] = canonical_path;
+
   setup_environment();
 
   auto arguments = std::vector<std::string>(argv, argv + argc);
-
   if (is_multiprocessing(arguments)) {
     Py_Initialize();
     rc = Py_BytesMain(argc, argv);

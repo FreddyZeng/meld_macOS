@@ -57,7 +57,7 @@ meld_install_python "$TMP_DIR"
   fi
 
   g++ \
-    -std=c++11 \
+    -std=c++17 \
     -o "$BIN_DIR"/meldlauncher \
     -I"$TMP_DIR"/Python.framework/Headers \
     "$SELF_DIR"/src/meldlauncher.cpp \
