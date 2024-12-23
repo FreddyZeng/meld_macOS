@@ -17,11 +17,13 @@ static const std::string SETTINGS_DIR = std::string(getenv("HOME")) +
                                         "/Library/Application Support/" +
                                         BUNDLE_IDENTIFIER;
 
-std::string get_executable_path() {
+std::string get_executable_path()
+{
   uint32_t size = PATH_MAX;
   char path[size];
 
-  if (_NSGetExecutablePath(path, &size) == 0) {
+  if (_NSGetExecutablePath(path, &size) == 0)
+  {
     auto path_canonical = std::unique_ptr<char[]>(new char[size]);
     return std::string(realpath(path, path_canonical.get()));
   }
@@ -29,19 +31,23 @@ std::string get_executable_path() {
   return std::string();
 }
 
-std::string get_program_dir() {
-  if (auto executable_path = get_executable_path(); not executable_path.empty()) {
+std::string get_program_dir()
+{
+  if (auto executable_path = get_executable_path(); not executable_path.empty())
+  {
     return executable_path.substr(0, executable_path.rfind("/"));
   }
 
   return std::string();
 }
 
-void setenv(const std::string &name, const std::string &value) {
+void setenv(const std::string &name, const std::string &value)
+{
   setenv(name.c_str(), value.c_str(), 1);
 }
 
-static void setup_environment() {
+static void setup_environment()
+{
   std::string program_dir = get_program_dir();
   std::string contents_dir;
   contents_dir.assign(program_dir).append("/.."); // <TheApp.app>/Contents
@@ -85,13 +91,12 @@ static void setup_environment() {
   setenv(
       "PYTHONPATH",
       (std::stringstream()
-          << program_dir << "/../Resources/lib/python" << PY_MAJOR_VERSION
-          << "." << PY_MINOR_VERSION << "/site-packages"
-          << ":" << program_dir
-          << "/../Frameworks/Python.framework/Versions/Current/lib/python"
-          << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION << "/site-packages"
-      ).str()
-  );
+       << program_dir << "/../Resources/lib/python" << PY_MAJOR_VERSION
+       << "." << PY_MINOR_VERSION << "/site-packages"
+       << ":" << program_dir
+       << "/../Frameworks/Python.framework/Versions/Current/lib/python"
+       << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION << "/site-packages")
+          .str());
 
   // Python cache files (*.pyc)
   setenv("PYTHONPYCACHEPREFIX", cache_dir);
@@ -101,7 +106,8 @@ static void setup_environment() {
 
   // set GUI language
   // https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-  if (getenv("LANG") == nullptr) {
+  if (getenv("LANG") == nullptr)
+  {
     CFLocaleRef cflocale = CFLocaleCopyCurrent();
     CFStringRef value =
         (CFStringRef)CFLocaleGetValue(cflocale, kCFLocaleIdentifier);
@@ -112,19 +118,22 @@ static void setup_environment() {
   }
 }
 
-bool is_multiprocessing(const std::vector<std::string>& args) {
+bool is_multiprocessing(const std::vector<std::string> &args)
+{
   bool result = false;
 
-  if (args.size()                          >= 3 and
-      args[1].compare("-c")                == 0 and
-      args[2].find("from multiprocessing") != std::string::npos) {
+  if (args.size() >= 3 and
+      args[1].compare("-c") == 0 and
+      args[2].find("from multiprocessing") != std::string::npos)
+  {
     result = true;
   }
 
   return result;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int rc = 0;
 
   char canonical_path[PATH_MAX];
@@ -134,37 +143,42 @@ int main(int argc, char *argv[]) {
   setup_environment();
 
   auto arguments = std::vector<std::string>(argv, argv + argc);
-  if (is_multiprocessing(arguments)) {
+  if (is_multiprocessing(arguments))
+  {
     Py_Initialize();
     rc = Py_BytesMain(argc, argv);
   }
-  else {
+  else
+  {
     PyStatus status;
     PyConfig config;
     PyConfig_InitPythonConfig(&config);
 
-    arguments.insert(arguments.begin()+1, argv[0]);
+    arguments.insert(arguments.begin() + 1, argv[0]);
     std::vector<const char *> new_argv(arguments.size());
     std::transform(arguments.begin(), arguments.end(), new_argv.begin(),
-        [](std::string &str) { return str.c_str(); }
-    );
+                   [](std::string &str)
+                   { return str.c_str(); });
 
     status = PyConfig_SetBytesArgv(&config, new_argv.size(),
-        const_cast<char **>(new_argv.data()));
-    if (not PyStatus_Exception(status)) {
+                                   const_cast<char **>(new_argv.data()));
+    if (not PyStatus_Exception(status))
+    {
       status = Py_InitializeFromConfig(&config);
-      if (not PyStatus_Exception(status)) {
-        std::string filename = (
-            std::stringstream() << get_program_dir() << "/../Resources/lib/"
+      if (not PyStatus_Exception(status))
+      {
+        std::string filename = (std::stringstream()
+                                << get_program_dir() << "/../Resources/lib/"
                                 << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
-                                << "/site-packages/meld/meld"
-        ).str();
+                                << "/site-packages/meld/meld")
+                                   .str();
 
         FILE *program_file = fopen(filename.c_str(), "r");
         rc = PyRun_SimpleFile(program_file, filename.c_str());
         fclose(program_file);
 
-        if (PyStatus_Exception(status)) {
+        if (PyStatus_Exception(status))
+        {
           Py_ExitStatusException(status);
         }
       }
