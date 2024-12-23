@@ -35,7 +35,7 @@ echo '/Applications/Meld.app/Contents/MacOS/Meld "$@"' > /usr/local/bin/meld
 ```bash
 git config --global diff.tool meld
 git config --global difftool.prompt false
-git config --global difftool.meld.cmd '/Applications/Meld.app/Contents/MacOS/Meld "$LOCAL" "$REMOTE"'
+git config --global difftool.meld.cmd "/Applications/Meld.app/Contents/MacOS/Meld \$LOCAL \$REMOTE"
 ```
 
 ## download
