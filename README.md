@@ -20,13 +20,15 @@ Add an alias to e.g. `~/.zshrc`:
 echo "alias meld='/Applications/Meld.app/Contents/MacOS/Meld'" >> ~/.zshrc
 ```
 
-Or create a symlink in a folder in your `PATH`, e.g. in `/usr/local/bin`:
+Or create a wrapper script that is in your `$PATH`, e.g. in `/usr/local/bin`:
 
 ```bash
 # Ensure that /usr/local/bin exists and that you have write permission
 # before running this command.
-ln -s /Applications/Meld.app/Contents/MacOS/Meld /usr/local/bin/meld
+echo '/Applications/Meld.app/Contents/MacOS/Meld "$@"' > /usr/local/bin/meld
 ```
+
+⚠️ Do not create a symlink, this isn't supported!
 
 ### as difftool
 

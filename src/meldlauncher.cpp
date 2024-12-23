@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 // https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/MacOSXDirectories/MacOSXDirectories.html
 static const std::string BUNDLE_IDENTIFIER = "org.gnome.Meld";
@@ -39,6 +40,27 @@ std::string get_program_dir()
   }
 
   return std::string();
+}
+
+bool is_symlinked()
+{
+  uint32_t size = PATH_MAX;
+  char path[size];
+  char path_canonical[size];
+
+  if (_NSGetExecutablePath(path, &size) == 0)
+  {
+    realpath(path, path_canonical);
+
+    if (strcmp(path, path_canonical) != 0)
+    {
+      std::cout << "path           = " << path << std::endl
+                << "path_canonical = " << path_canonical << std::endl
+                << std::endl;
+      return true;
+    }
+  }
+  return false;
 }
 
 void setenv(const std::string &name, const std::string &value)
@@ -132,11 +154,31 @@ bool is_multiprocessing(const std::vector<std::string> &args)
 
 int main(int argc, char *argv[])
 {
-  int rc = 0;
+  if (is_symlinked())
+  {
+    // While it is possible to get Meld somewhat working when symlinked
+    // by manipulating 'argv[0]' with code like
+    //
+    //      char canonical_path[PATH_MAX];
+    //      strcpy(canonical_path, get_executable_path().c_str());
+    //      argv[0] = canonical_path;
+    //
+    // there are side effects. Some are visible (wrong window size, missing
+    // icon in the dock), but who knows what else is getting messed up by this.
+    // I haven't found any other app (including Apple's own apps) that supports
+    // this. The main binary in an application bundle is simply not meant to be
+    // symlinked to.
+    std::cout
+        << "You appear to be using a symlink to the Meld executable." << std::endl
+        << "This is not supported, please see instructions:" << std::endl
+        << std::endl
+        << "   https://gitlab.com/dehesselle/meld_macos#usage" << std::endl;
+    return 1;
+  }
 
-  char canonical_path[PATH_MAX];
-  strcpy(canonical_path, get_executable_path().c_str());
-  argv[0] = canonical_path;
+  //----------------------------------------------------------------------------
+
+  int rc = 0;
 
   setup_environment();
 
