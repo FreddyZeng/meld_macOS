@@ -41,8 +41,8 @@ python_macos/v21/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
 # https://pypi.org/project/pycairo/
 # https://pypi.org/project/PyGObject/
 MELD_PYTHON_PKG_PYGOBJECT="\
-  pygobject==3.48.2\
-  pycairo==1.26.1\
+  pygobject==3.50.0\
+  pycairo==1.27.0\
 "
 
 ### functions ##################################################################
