@@ -120,16 +120,14 @@ static void setup_environment()
 
 bool is_multiprocessing(const std::vector<std::string> &args)
 {
-  bool result = false;
-
   if (args.size() >= 3 and
       args[1].compare("-c") == 0 and
       args[2].find("from multiprocessing") != std::string::npos)
   {
-    result = true;
+    return true;
   }
 
-  return result;
+  return false;
 }
 
 int main(int argc, char *argv[])
@@ -142,24 +140,22 @@ int main(int argc, char *argv[])
 
   setup_environment();
 
-  auto arguments = std::vector<std::string>(argv, argv + argc);
-  if (is_multiprocessing(arguments))
+  if (auto arguments = std::vector<std::string>(argv, argv + argc); is_multiprocessing(arguments))
   {
     Py_Initialize();
     rc = Py_BytesMain(argc, argv);
   }
   else
   {
-    PyStatus status;
-    PyConfig config;
-    PyConfig_InitPythonConfig(&config);
-
     arguments.insert(arguments.begin() + 1, argv[0]);
     std::vector<const char *> new_argv(arguments.size());
     std::transform(arguments.begin(), arguments.end(), new_argv.begin(),
                    [](std::string &str)
                    { return str.c_str(); });
 
+    PyStatus status;
+    PyConfig config;
+    PyConfig_InitPythonConfig(&config);
     status = PyConfig_SetBytesArgv(&config, new_argv.size(),
                                    const_cast<char **>(new_argv.data()));
     if (not PyStatus_Exception(status))
