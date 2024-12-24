@@ -34,7 +34,7 @@ MELD_PYTHON_VER_MAJOR=3
 MELD_PYTHON_VER_MINOR=10
 MELD_PYTHON_VER=$MELD_PYTHON_VER_MAJOR.$MELD_PYTHON_VER_MINOR
 MELD_PYTHON_URL="https://gitlab.com/api/v4/projects/26780227/packages/generic/\
-python_macos/v21/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
+python_macos/v21.1/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
 
 #--------------------------------------- Python packages to be bundled with Meld
 
