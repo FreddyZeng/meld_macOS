@@ -17,14 +17,13 @@
 
 ### variables ##################################################################
 
-MELD_APPDIR=$ART_DIR/Meld.app
-MELD_APPCON_DIR=$MELD_APPDIR/Contents
-MELD_APP_RES_DIR=$MELD_APPCON_DIR/Resources
+MELD_APP_DIR=$ART_DIR/Meld.app
+MELD_APP_CON_DIR=$MELD_APP_DIR/Contents
+MELD_APP_RES_DIR=$MELD_APP_CON_DIR/Resources
 MELD_APP_BIN_DIR=$MELD_APP_RES_DIR/bin
-MELD_APPETC_DIR=$MELD_APP_RES_DIR/etc
 MELD_APP_LIB_DIR=$MELD_APP_RES_DIR/lib
-MELD_APPFRA_DIR=$MELD_APPCON_DIR/Frameworks
-MELD_APP_PLIST=$MELD_APPCON_DIR/Info.plist
+MELD_APP_FRA_DIR=$MELD_APP_CON_DIR/Frameworks
+MELD_APP_PLIST=$MELD_APP_CON_DIR/Info.plist
 
 MELD_BUILD=${MELD_BUILD:-0}
 
@@ -93,7 +92,7 @@ function meld_pipinstall
   done
 
   local path_original=$PATH
-  export PATH=$MELD_APPFRA_DIR/Python.framework/Versions/Current/bin:$PATH
+  export PATH=$MELD_APP_FRA_DIR/Python.framework/Versions/Current/bin:$PATH
 
   # shellcheck disable=SC2086 # we need word splitting here
   pip$MELD_PYTHON_VER_MAJOR install \
@@ -139,7 +138,7 @@ function meld_install_python
 {
   local target_dir=$1
 
-  target_dir=${target_dir:-$MELD_APPFRA_DIR}
+  target_dir=${target_dir:-$MELD_APP_FRA_DIR}
 
   mkdir -p "$target_dir"
   tar -C "$target_dir" -xf "$PKG_DIR"/"$(basename "${MELD_PYTHON_URL%\?*}")"
