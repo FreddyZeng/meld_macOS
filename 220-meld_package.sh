@@ -164,7 +164,7 @@ fi
 
 # add supported languages
 /usr/libexec/PlistBuddy -c "Add CFBundleLocalizations array" "$MELD_APP_PLIST"
-for locale in "$SRC_DIR"/meld-*/*.po; do
+for locale in "$SRC_DIR"/meld/po/*.po; do
   if [ "$locale" = "en_GB" ]; then
     locale="en"
   fi
