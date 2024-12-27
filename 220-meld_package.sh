@@ -31,31 +31,15 @@ error_trace_enable
 #---------------------------------------------------------------- build launcher
 
 meld_install_python "$TMP_DIR"
-(
-  if [ "$(uname -m)" = "x86_64" ]; then
-    # special treatment on Intel: Build (only) the main binary with a recent SDK
-    # (needs to be >=11.x) and set the deployment target to achieve backward
-    # compatibility.
-    # https://gitlab.gnome.org/GNOME/gtk/-/issues/5305#note_1673947
-    # shellcheck disable=SC2030 # subshell-specific environment modification
-    MACOSX_DEPLOYMENT_TARGET=$(
-      /usr/libexec/PlistBuddy -c \
-        "Print DefaultProperties:MACOSX_DEPLOYMENT_TARGET" \
-        "$SDKROOT"/SDKSettings.plist
-    )
-    export MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-  fi
 
-  g++ \
-    -std=c++17 \
-    -o "$BIN_DIR"/meldlauncher \
-    -I"$TMP_DIR"/Python.framework/Headers \
-    "$SELF_DIR"/src/meldlauncher.cpp \
-    -framework CoreFoundation \
-    -F"$TMP_DIR" \
-    -framework Python
-)
+g++ \
+  -std=c++17 \
+  -o "$BIN_DIR"/meldlauncher \
+  -I"$TMP_DIR"/Python.framework/Headers \
+  "$SELF_DIR"/src/meldlauncher.cpp \
+  -framework CoreFoundation \
+  -F"$TMP_DIR" \
+  -framework Python
 
 #----------------------------------------------------- create application bundle
 
