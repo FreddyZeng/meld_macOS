@@ -145,11 +145,6 @@ function meld_install_python
   local python_lib=Python.framework/Versions/$MELD_PYTHON_VER/Python
   install_name_tool -id @executable_path/../Frameworks/$python_lib \
     "$target_dir"/$python_lib
-
-  # create '.pth' file inside Framework to include our site-packages directory
-  echo "../../../../../../../Resources/lib/python$MELD_PYTHON_VER/site-packages"\
-    > "$target_dir"/Python.framework/Versions/Current/lib/\
-python$MELD_PYTHON_VER/site-packages/meld.pth
 }
 
 function meld_build_wheels

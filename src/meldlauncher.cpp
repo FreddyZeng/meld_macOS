@@ -205,12 +205,15 @@ int main(int argc, char *argv[])
       status = Py_InitializeFromConfig(&config);
       if (not PyStatus_Exception(status))
       {
-        std::string filename = (std::stringstream()
-                                << get_program_dir() << "/../Resources/lib/"
-                                << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
-                                << "/site-packages/meld/meld")
-                                   .str();
+        std::string site_packages_dir =
+            (std::stringstream()
+             << get_program_dir() << "/../Resources/lib/"
+             << "python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
+             << "/site-packages")
+                .str();
+        PyWideStringList_Append(&config.module_search_paths, (const wchar_t *)site_packages_dir.c_str());
 
+        std::string filename = site_packages_dir + "/meld/meld";
         FILE *program_file = fopen(filename.c_str(), "r");
         rc = PyRun_SimpleFile(program_file, filename.c_str());
         fclose(program_file);
