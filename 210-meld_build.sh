@@ -39,8 +39,6 @@ error_trace_enable
 #-------------------------------------------------------------------- build Meld
 
 if [ "$CI_PROJECT_NAME" = "meld" ]; then
-  patch -p 1 < "$ETC_DIR/modulesets/meld/patches/meld-app.patch"
-
   ln -s "$CI_PROJECT_DIR" "$SRC_DIR"/meld
 
   jhb run meson setup \
