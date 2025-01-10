@@ -68,9 +68,9 @@
   </autotools>
   <!---->
   <meson id="meld">
-    <branch module="meld/-/archive/3.22.2/meld-3.22.2.tar.bz2"
-            version="3.22.2"
-            hash="sha256:c535ef1146fe455e6be86a783c88736ff9f7f6345388d84f71612e1e2cde7b5b"
+    <branch module="meld/-/archive/3.22.3/meld-3.22.3.tar.bz2"
+            version="3.22.3"
+            hash="sha256:859b34226983155c4fe4da94ab8b121fc55a48f0c166c3bc6a8e7624e8849e3f"
             checkoutdir="meld"
             repo="gnome_gitlab">
       <patch file="meld-app.patch"
