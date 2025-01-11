@@ -25,7 +25,6 @@
             hash="sha256:a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836"
             repo="freedesktop" />
     <dependencies>
-      <dep package="gettext" />
       <dep package="glib" />
     </dependencies>
   </meson>
