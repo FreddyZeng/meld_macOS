@@ -248,13 +248,9 @@
   <!---->
   <meson id="pango"
          mesonargs="-Dfontconfig=enabled">
-    <branch module="pango/1.52/pango-1.52.2.tar.xz"
-            version="1.52.2"
-            hash="sha256:d0076afe01082814b853deec99f9349ece5f2ce83908b8e58ff736b41f78a96b">
-
-      <patch file="pango-ct-font-fallback.patch"
-             strip="1" />
-    </branch>
+    <branch module="pango/1.56/pango-1.56.0.tar.xz"
+            version="1.56.0"
+            hash="sha256:1fb98b338ee6f7cf8ef96153b7d242f4568fe60f9b7434524eca630a57bd538b" />
     <dependencies>
       <dep package="glib" />
       <dep package="cairo" />
