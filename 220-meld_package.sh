@@ -93,6 +93,17 @@ grep -n "dylib" "$MELD_APP_RES_DIR"/share/gir-1.0/*.gir |
     "$gir"
 done
 
+#--------------------------------------------------------- configure GTK UI font
+
+# Updating Pango beyond 1.55 has the side effect of breaking something else:
+# it's either choosing a different UI font or breaking its kerning. We "fix"
+# it by setting a font explicitly.
+
+{
+  echo -e ""
+  cat "$SELF_DIR"/resources/gtk.css
+} >> "$MELD_APP_RES_DIR"/share/themes/Mac/gtk-3.0/gtk-keys.css
+
 #------------------------------------------------------------- update Info.plist
 
 # enable HiDPI
