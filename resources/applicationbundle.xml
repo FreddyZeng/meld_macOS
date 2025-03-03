@@ -2,12 +2,13 @@
 <bundle>
   <executables>
     <executable name="Meld">meldlauncher</executable>
+    <executable>gtk3-demo</executable>
   </executables>
   <frameworks>
     <framework>tmp/Python.framework</framework>
   </frameworks>
   <gdkpixbuf>dummy</gdkpixbuf>
-  <gir>dummy</gir>
+  <gir command="jhb run g-ir-compiler">dummy</gir>
   <gtk3>dummy</gtk3>
   <icon>tmp/Meld.icns</icon>
   <libraries>
@@ -25,6 +26,8 @@
     <resource>share/meld</resource>
     <!---->
     <resource>etc/fonts</resource>
+    <resource>share/fontconfig</resource>
+    <!---->
     <resource>share/glib-2.0</resource>
     <resource>share/gtksourceview-4</resource>
     <resource>share/icons</resource>

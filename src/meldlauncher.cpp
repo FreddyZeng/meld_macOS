@@ -126,8 +126,10 @@ static void setup_environment()
 
   // GdkPixbuf
   // https://docs.gtk.org/gdk-pixbuf
-  setenv("GDK_PIXBUF_MODULE_FILE",
-         bundle_frameworks_dir + "/gdk-pixbuf-2.0/2.10.0/loaders.cache");
+  setenv("GDK_PIXBUF_MODULE_FILE", bundle_resources_dir + "/etc/loaders.cache");
+
+  // Input Method modules
+  setenv("GTK_IM_MODULE_FILE", bundle_resources_dir + "/etc/immodules.cache");
 
   // FontConfig
   setenv("FONTCONFIG_PATH", bundle_resources_dir + "/etc/fonts");
