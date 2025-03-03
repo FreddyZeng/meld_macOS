@@ -20,7 +20,6 @@
 MELD_APP_DIR=$ART_DIR/Meld.app
 MELD_APP_CON_DIR=$MELD_APP_DIR/Contents
 MELD_APP_RES_DIR=$MELD_APP_CON_DIR/Resources
-MELD_APP_BIN_DIR=$MELD_APP_RES_DIR/bin
 MELD_APP_LIB_DIR=$MELD_APP_RES_DIR/lib
 MELD_APP_FRA_DIR=$MELD_APP_CON_DIR/Frameworks
 MELD_APP_PLIST=$MELD_APP_CON_DIR/Info.plist
@@ -115,16 +114,18 @@ function meld_pipinstall_pygobject
 {
   # GObject Introspection
   lib_change_paths \
-    @loader_path/../../.. \
-    "$MELD_APP_LIB_DIR" \
+    @loader_path/../../../../../Frameworks \
+    "$MELD_APP_FRA_DIR" \
     "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/gi/_gi*.so
 
   # Cairo
   lib_change_paths \
-    @loader_path/../../.. \
-    "$MELD_APP_LIB_DIR" \
+    @loader_path/../../../../../Frameworks \
+    "$MELD_APP_FRA_DIR" \
     "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/cairo/\
 _cairo.cpython-${MELD_PYTHON_VER/./}-darwin.so
+
+  rm -rf "${MELD_APP_RES_DIR:?}"/include
 }
 
 function meld_download_python

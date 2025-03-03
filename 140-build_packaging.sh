@@ -18,7 +18,9 @@ source "$(dirname "${BASH_SOURCE[0]}")"/jhb/etc/jhb.conf.sh
 
 ### variables ##################################################################
 
-# Nothing here.
+ABCREATE_VER="0.1"
+ABCREATE_URL=https://github.com/dehesselle/abcreate/releases/download/\
+v$ABCREATE_VER/abcreate-$ABCREATE_VER-py3-none-any.whl
 
 ### functions ##################################################################
 
@@ -32,9 +34,7 @@ fi
 
 #-------------------------------------------- install application bundle creator
 
-jhb build gtkmacbundler
-# protect against removal during cleanup
-basename "$SRC_DIR"/gtk-mac-bundler* >> "$SRC_DIR"/.keep
+jhb run pip install $ABCREATE_URL
 
 #------------------------------------------------------------- create disk image
 

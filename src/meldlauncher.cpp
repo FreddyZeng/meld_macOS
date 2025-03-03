@@ -108,49 +108,45 @@ static void setup_environment()
   auto bundle_program_dir = get_program_dir();
   auto bundle_contents_dir = bundle_program_dir + "/..";
   auto bundle_resources_dir = bundle_contents_dir + "/Resources";
-  //
-  auto bundle_etc_dir = bundle_resources_dir + "/etc";
-  auto bundle_bin_dir = bundle_resources_dir + "/bin";
-  auto bundle_lib_dir = bundle_resources_dir + "/lib";
-  auto bundle_shr_dir = bundle_resources_dir + "/share";
+  auto bundle_frameworks_dir = bundle_contents_dir + "/Frameworks";
 
   // XDG
   // https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
   setenv("XDG_CACHE_HOME", cache_dir);
   setenv("XDG_CONFIG_HOME", settings_dir);
-  setenv("XDG_DATA_DIRS", bundle_shr_dir);
+  setenv("XDG_DATA_DIRS", bundle_resources_dir + "/share");
   setenv("XDG_DATA_HOME", settings_dir + "/share");
   setenv("XDG_RUNTIME_DIR", "/tmp"); // we don't have anything better
   setenv("XDG_STATE_HHOME", settings_dir + "/state");
 
   // GTK
   // https://developer.gnome.org/gtk3/stable/gtk-running.html
-  setenv("GTK_EXE_PREFIX", bundle_resources_dir);
+  setenv("GTK_EXE_PREFIX", bundle_frameworks_dir);
   setenv("GTK_DATA_PREFIX", bundle_resources_dir);
 
   // GdkPixbuf
   // https://docs.gtk.org/gdk-pixbuf
   setenv("GDK_PIXBUF_MODULE_FILE",
-         bundle_lib_dir + "/gdk-pixbuf-2.0/2.10.0/loaders.cache");
+         bundle_frameworks_dir + "/gdk-pixbuf-2.0/2.10.0/loaders.cache");
 
   // FontConfig
-  setenv("FONTCONFIG_PATH", bundle_etc_dir + "/fonts");
-
-  // GIO
-  setenv("GIO_MODULE_DIR", bundle_lib_dir + "/gio/modules");
+  setenv("FONTCONFIG_PATH", bundle_resources_dir + "/etc/fonts");
 
   // GObject Introspection Repository
-  setenv("GI_TYPELIB_PATH", bundle_lib_dir + "/girepository-1.0");
+  setenv("GI_TYPELIB_PATH", bundle_resources_dir + "/lib/girepository-1.0");
 
   // Python site-packages
   setenv(
       "PYTHONPATH",
       (std::stringstream()
-       << bundle_lib_dir << "/python" << PY_MAJOR_VERSION
-       << "." << PY_MINOR_VERSION << "/site-packages"
-       << ":" << bundle_contents_dir
-       << "/Frameworks/Python.framework/Versions/Current/lib/python"
-       << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION << "/site-packages")
+       << bundle_resources_dir << "/lib"
+       << "/python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
+       << "/site-packages"
+       << ":"
+       << bundle_frameworks_dir
+       << "/Python.framework/Versions/Current/lib"
+       << "/python" << PY_MAJOR_VERSION << "." << PY_MINOR_VERSION
+       << "/site-packages")
           .str());
 
   // Python cache files (*.pyc)
@@ -200,6 +196,19 @@ int main(int argc, char *argv[])
     Py_Initialize();
     rc = Py_BytesMain(argc, argv);
   }
+#ifdef PYTHONSHELL
+  else if (argc > 1 and std::string(argv[1]) == "pythonshell")
+  {
+    Py_Initialize();
+    // drop the "pythonshell" argument
+    for (size_t i = 2; i < argc; ++i)
+    {
+      argv[i - 1] = argv[i];
+    }
+    --argc;
+    rc = Py_BytesMain(argc, argv);
+  }
+#endif
   else
   {
     arguments.insert(arguments.begin() + 1, argv[0]);

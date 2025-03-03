@@ -29,28 +29,6 @@
     </dependencies>
   </meson>
   <!--
-    GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
-
-    Patch mocks autotools interface to the extent that it provides a
-    "configure", but the "make install" is still broken and needs to
-    be skipped.
-  -->
-  <autotools id="gtkmacbundler"
-             autogen-sh="configure"
-             makeargs="&amp;&amp; make install"
-             skip-install="yes"
-             supports-non-srcdir-builds="no">
-    <branch module="gtk-mac-bundler/-/archive/6dd89ea6/gtk-mac-bundler-6dd89ea6.tar.bz2"
-            version="6dd89ea6"
-            hash="sha256:ef70eba556679cae60d954b52f31c9936d0ca17e27ee7f71380936e1c3545c6b"
-            checkoutdir="gtk-mac-bundler_6dd89ea6"
-            rename-tarball="gtk-mac-bundler_6dd89ea6.tar.bz2"
-            repo="gnome_gitlab">
-      <patch file="gtk-mac-bundler_autotools.patch"
-             strip="1" />
-    </branch>
-  </autotools>
-  <!--
     ImageMagick https://imagemagick.org
   -->
   <autotools id="imagemagick"

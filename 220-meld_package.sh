@@ -39,59 +39,19 @@ g++ \
   "$SELF_DIR"/src/meldlauncher.cpp \
   -framework CoreFoundation \
   -F"$TMP_DIR" \
-  -framework Python
+  -framework Python \
+  #-DPYTHONSHELL
 
 #----------------------------------------------------- create application bundle
 
-(
-  cd "$SELF_DIR" || exit 1
-  export ART_DIR # is referenced in meld.bundle
-  jhb run gtk-mac-bundler resources/meld.bundle
-)
+# abcreate can only access files inside the specified source directory ("-s")
+cp "$SELF_DIR"/resources/meld_devel.icns "$TMP_DIR"/Meld.icns
 
-# remove everything but Meld from lib/pythonN.N
-mkdir "$TMP_DIR"/site-packages
-find "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"/site-packages \
-  -maxdepth 1 \
-  -name "meld*" \
-  -exec mv {} "$TMP_DIR"/site-packages \;
-rm -rf "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-mkdir "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-mv "$TMP_DIR"/site-packages "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-
-# install Python.framework into bundle
-meld_install_python
-rm -rf "$MELD_APP_LIB_DIR"/python"$MELD_PYTHON_VER"/test
-
-#------------------------------------------------------ install Meld main script
-
-cp "$BIN_DIR"/meld \
-  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld"
-chmod 644 \
-  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld/meld"
+abcreate create resources/applicationbundle.xml -s "$VER_DIR" -t "$ART_DIR"
 
 #------------------------------------------------------- install Python packages
 
 meld_pipinstall MELD_PYTHON_PKG_PYGOBJECT
-
-#--------------------------------------- patch library link paths: Resources/lib
-
-lib_change_siblings "$MELD_APP_LIB_DIR"
-
-#----------------------------------------------------- patch introspection files
-
-# Add the "@executeble_path/..." prefix to a second library in the
-# shared-library list.
-
-grep -n "dylib" "$MELD_APP_RES_DIR"/share/gir-1.0/*.gir |
-    grep "," |
-    awk -F":" '{ print $1 }' |
-    while IFS= read -r gir; do
-  gsed -i -E 's|,(.+\.dylib")|,@executable_path/../Resources/lib/\1|' "$gir"
-  jhb run g-ir-compiler \
-    -o "$MELD_APP_LIB_DIR/girepository-1.0/$(basename -s .gir "$gir")".typelib \
-    "$gir"
-done
 
 #--------------------------------------------------------- configure GTK UI font
 
@@ -131,7 +91,11 @@ fi
 
 # set copyright
 /usr/libexec/PlistBuddy -c "Set NSHumanReadableCopyright 'Copyright © \
-2009-2022 Kai Willadsen'" "$MELD_APP_PLIST"
+2009-2025 Kai Willadsen'" "$MELD_APP_PLIST"
+
+# set bundle identifier
+/usr/libexec/PlistBuddy -c "Set CFBundleIdentifier 'org.gnome.Meld'" \
+  "$MELD_APP_PLIST"
 
 # set app category
 /usr/libexec/PlistBuddy -c \
@@ -147,16 +111,6 @@ fi
 'Meld needs your permission to access the Downloads folder.'" "$MELD_APP_PLIST"
 /usr/libexec/PlistBuddy -c "Add NSRemoveableVolumesUsageDescription string \
 'Meld needs your permission to access removeable volumes.'" "$MELD_APP_PLIST"
-
-# add supported languages
-/usr/libexec/PlistBuddy -c "Add CFBundleLocalizations array" "$MELD_APP_PLIST"
-for locale in "$SRC_DIR"/meld/po/*.po; do
-  if [ "$locale" = "en_GB" ]; then
-    locale="en"
-  fi
-  /usr/libexec/PlistBuddy -c "Add CFBundleLocalizations: string \
-'$(basename -s .po "$locale")'" "$MELD_APP_PLIST"
-done
 
 # add some metadata to make CI identifiable
 if $CI; then
