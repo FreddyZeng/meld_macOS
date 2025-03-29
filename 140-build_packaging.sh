@@ -18,7 +18,7 @@ source "$(dirname "${BASH_SOURCE[0]}")"/jhb/etc/jhb.conf.sh
 
 ### variables ##################################################################
 
-ABCREATE_VER="0.3"
+ABCREATE_VER="0.4.1"
 ABCREATE_URL=https://github.com/dehesselle/abcreate/releases/download/\
 v$ABCREATE_VER/abcreate-$ABCREATE_VER-py3-none-any.whl
 
