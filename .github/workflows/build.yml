@@ -23,10 +23,8 @@ jobs:
         include:
           - arch: x86_64
             os: macos-13 # A recent Intel-based macOS runner
-            sdkroot: /Applications/Xcode_14.3.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
           - arch: arm64
             os: macos-14 # The latest Apple Silicon (ARM64) runner
-            sdkroot: /Applications/Xcode_15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk
 
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
@@ -36,7 +34,7 @@ jobs:
       MELD_BUILD: ${{ github.run_id }}
       CCACHE_DIR: ${{ github.workspace }}/ccache
       CCACHE_MAXSIZE: "500Mi"
-      SDKROOT: ${{ matrix.sdkroot }}
+      # SDKROOT will be set dynamically in a later step
 
     steps:
       # 1. Check-out the repository and its submodules
@@ -55,26 +53,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.arch }}-ccache-
 
-      # 3. Verify SDK (replaces the included GitLab template)
-      #    NOTE: The logic from the original .verify_sdk-template.yml must be
-      #    transferred here. This is a placeholder for that logic.
-      - name: Verify SDK
+      # 3. Install build dependencies
+      - name: Install build dependencies
         run: |
-          echo "Verifying SDK at $SDKROOT..."
-          if [ ! -d "$SDKROOT" ]; then
-            echo "SDK not found at $SDKROOT!"
+          brew install autoconf automake libtool gettext
+
+      # 4. Set and Verify SDK Path
+      #    This step dynamically finds the correct SDK path and exports it.
+      - name: Set and Verify SDK Path
+        id: set_sdk
+        run: |
+          SDK_PATH=$(xcrun --show-sdk-path)
+          echo "SDK_PATH=${SDK_PATH}" >> $GITHUB_ENV
+          echo "Found SDK at: ${SDK_PATH}"
+          if [ ! -d "$SDK_PATH" ]; then
+            echo "SDK not found!"
             exit 1
           fi
           echo "SDK verified."
 
-      # 4. Run the build scripts
+      # 5. Run the build scripts
       - name: Build Toolset
         run: ./build_toolset.sh
 
       - name: Build Meld
         run: ./build_meld.sh
 
-      # 5. Cleanup (equivalent to after_script)
+      # 6. Cleanup (equivalent to after_script)
       #    This step runs even if the build fails.
       - name: Cleanup build directories
         if: always()
@@ -93,7 +98,7 @@ jobs:
             echo "jhb config not found, skipping cleanup."
           fi
 
-      # 6. Upload the build artifact
+      # 7. Upload the build artifact
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
