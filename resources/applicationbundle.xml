@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<bundle>
+  <executables>
+    <executable name="Meld">meldlauncher</executable>
+    <executable>gtk3-demo</executable>
+  </executables>
+  <frameworks>
+    <framework>tmp/Python.framework</framework>
+  </frameworks>
+  <gdkpixbuf/>
+  <gir command="jhb run g-ir-compiler"/>
+  <gtk3/>
+  <icons>
+    <icon>tmp/Meld.icns</icon>
+  </icons>
+  <libraries>
+    <library>libgtksourceview-4.0.dylib</library>
+    <library>libreadline.8.dylib</library>
+  </libraries>
+  <locales>
+    <locale>meld.mo</locale>
+    <locale>gtk30.mo</locale>
+    <locale>gtksourceview-4.mo</locale>
+  </locales>
+  <plist/>
+  <resources>
+    <resource>lib/python3.10/site-packages/meld</resource>
+    <resource target_path="lib/python3.10/site-packages/meld/meld" chmod="0o644">bin/meld</resource>
+    <resource>share/meld</resource>
+    <!---->
+    <resource>etc/fonts</resource>
+    <resource>share/fontconfig</resource>
+    <!---->
+    <resource>share/glib-2.0</resource>
+    <resource>share/gtksourceview-4</resource>
+    <resource>share/icons</resource>
+    <resource>share/themes</resource>
+  </resources>
+</bundle>

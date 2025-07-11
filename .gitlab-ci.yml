@@ -29,8 +29,14 @@ build:
   tags:
     - macos
     - ${ARCHITECTURE}
+  cache:
+    key: $CI_JOB_NAME_SLUG
+    paths:
+      - ccache
   variables:
     MELD_BUILD: $CI_PIPELINE_IID
+    CCACHE_DIR: $CI_PROJECT_DIR/ccache
+    CCACHE_MAXSIZE: "500Mi"
   script:
     - !reference [ .verify_sdk, script ]
     - ./build_toolset.sh

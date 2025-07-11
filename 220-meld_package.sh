@@ -14,16 +14,7 @@
 
 ### dependencies ###############################################################
 
-#------------------------------------------------------ source jhb configuration
-
 source "$(dirname "${BASH_SOURCE[0]}")"/jhb/etc/jhb.conf.sh
-
-#------------------------------------------- source common functions from bash_d
-
-# bash_d is already available (it's part of jhb configuration)
-
-bash_d_include error
-bash_d_include lib
 
 ### variables ##################################################################
 
@@ -40,83 +31,38 @@ error_trace_enable
 #---------------------------------------------------------------- build launcher
 
 meld_install_python "$TMP_DIR"
-(
-  if [ "$(uname -m)" = "x86_64" ]; then
-    # special treatment on Intel: Build (only) the main binary with a recent SDK
-    # (needs to be >=11.x) and set the deployment target to achieve backward
-    # compatibility.
-    # https://gitlab.gnome.org/GNOME/gtk/-/issues/5305#note_1673947
-    # shellcheck disable=SC2030 # subshell-specific environment modification
-    MACOSX_DEPLOYMENT_TARGET=$(
-      /usr/libexec/PlistBuddy -c \
-        "Print DefaultProperties:MACOSX_DEPLOYMENT_TARGET" \
-        "$SDKROOT"/SDKSettings.plist
-    )
-    export MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-  fi
 
-  g++ \
-    -std=c++17 \
-    -o "$BIN_DIR"/meldlauncher \
-    -I"$TMP_DIR"/Python.framework/Headers \
-    "$SELF_DIR"/src/meldlauncher.cpp \
-    -framework CoreFoundation \
-    -F"$TMP_DIR" \
-    -framework Python
-)
+g++ \
+  -std=c++17 \
+  -o "$BIN_DIR"/meldlauncher \
+  -I"$TMP_DIR"/Python.framework/Headers \
+  "$SELF_DIR"/src/meldlauncher.cpp \
+  -framework CoreFoundation \
+  -F"$TMP_DIR" \
+  -framework Python \
+  #-DPYTHONSHELL
 
 #----------------------------------------------------- create application bundle
 
-(
-  cd "$SELF_DIR" || exit 1
-  export ART_DIR # is referenced in meld.bundle
-  jhb run gtk-mac-bundler resources/meld.bundle
-)
+# abcreate can only access files inside the specified source directory ("-s")
+cp "$SELF_DIR"/resources/meld_devel.icns "$TMP_DIR"/Meld.icns
 
-# remove everything but Meld from lib/pythonN.N
-mkdir "$TMP_DIR"/site-packages
-find "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"/site-packages \
-  -maxdepth 1 \
-  -name "meld*" \
-  -exec mv {} "$TMP_DIR"/site-packages \;
-rm -rf "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-mkdir "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-mv "$TMP_DIR"/site-packages "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER"
-
-# install Python.framework into bundle
-meld_install_python
-rm -rf "$MELD_APP_LIB_DIR"/python"$MELD_PYTHON_VER"/test
-
-#------------------------------------------------------ install Meld main script
-
-cp "$BIN_DIR"/meld \
-  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld"
-chmod 644 \
-  "$MELD_APP_LIB_DIR/python$MELD_PYTHON_VER/site-packages/meld/meld"
+abcreate create resources/applicationbundle.xml -s "$VER_DIR" -t "$ART_DIR"
 
 #------------------------------------------------------- install Python packages
 
 meld_pipinstall MELD_PYTHON_PKG_PYGOBJECT
 
-#--------------------------------------- patch library link paths: Resources/lib
+#--------------------------------------------------------- configure GTK UI font
 
-lib_change_siblings "$MELD_APP_LIB_DIR"
+# Updating Pango beyond 1.55 has the side effect of breaking something else:
+# it's either choosing a different UI font or breaking its kerning. We "fix"
+# it by setting a font explicitly.
 
-#----------------------------------------------------- patch introspection files
-
-# Add the "@executeble_path/..." prefix to a second library in the
-# shared-library list.
-
-grep -n "dylib" "$MELD_APP_RES_DIR"/share/gir-1.0/*.gir |
-    grep "," |
-    awk -F":" '{ print $1 }' |
-    while IFS= read -r gir; do
-  gsed -i -E 's|,(.+\.dylib")|,@executable_path/../Resources/lib/\1|' "$gir"
-  jhb run g-ir-compiler \
-    -o "$MELD_APP_LIB_DIR/girepository-1.0/$(basename -s .gir "$gir")".typelib \
-    "$gir"
-done
+{
+  echo -e ""
+  cat "$SELF_DIR"/resources/gtk.css
+} >> "$MELD_APP_RES_DIR"/share/themes/Mac/gtk-3.0/gtk-keys.css
 
 #------------------------------------------------------------- update Info.plist
 
@@ -145,7 +91,11 @@ fi
 
 # set copyright
 /usr/libexec/PlistBuddy -c "Set NSHumanReadableCopyright 'Copyright © \
-2009-2022 Kai Willadsen'" "$MELD_APP_PLIST"
+2009-2025 Kai Willadsen'" "$MELD_APP_PLIST"
+
+# set bundle identifier
+/usr/libexec/PlistBuddy -c "Set CFBundleIdentifier 'org.gnome.Meld'" \
+  "$MELD_APP_PLIST"
 
 # set app category
 /usr/libexec/PlistBuddy -c \
@@ -161,16 +111,6 @@ fi
 'Meld needs your permission to access the Downloads folder.'" "$MELD_APP_PLIST"
 /usr/libexec/PlistBuddy -c "Add NSRemoveableVolumesUsageDescription string \
 'Meld needs your permission to access removeable volumes.'" "$MELD_APP_PLIST"
-
-# add supported languages
-/usr/libexec/PlistBuddy -c "Add CFBundleLocalizations array" "$MELD_APP_PLIST"
-for locale in "$SRC_DIR"/meld-*/*.po; do
-  if [ "$locale" = "en_GB" ]; then
-    locale="en"
-  fi
-  /usr/libexec/PlistBuddy -c "Add CFBundleLocalizations: string \
-'$(basename -s .po "$locale")'" "$MELD_APP_PLIST"
-done
 
 # add some metadata to make CI identifiable
 if $CI; then

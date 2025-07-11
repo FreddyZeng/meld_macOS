@@ -115,9 +115,9 @@
   <cmake id="freetype-no-harfbuzz"
          cmakeargs="-DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release">
 
-    <branch module="freetype/freetype-2.13.2.tar.xz"
-            version="2.13.2"
-            hash="sha256:12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d"
+    <branch module="freetype/freetype-2.13.3.tar.xz"
+            version="2.13.3"
+            hash="sha256:0550350666d427c74daeb85d5ac7bb353acba5f76956395995311a9c6f063289"
             repo="sourceforge" />
     <dependencies>
       <dep package="zlib" />
@@ -153,9 +153,9 @@
   <cmake id="freetype"
          cmakeargs="-DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release">
 
-    <branch module="freetype/freetype-2.13.2.tar.xz"
-            version="2.13.2"
-            hash="sha256:12991c4e55c506dd7f9b765933e62fd2be2e06d421505d7950a132e4f1bb484d"
+    <branch module="freetype/freetype-2.13.3.tar.xz"
+            version="2.13.3"
+            hash="sha256:0550350666d427c74daeb85d5ac7bb353acba5f76956395995311a9c6f063289"
             repo="sourceforge" />
     <dependencies>
       <dep package="harfbuzz-no-cairo" />
@@ -166,9 +166,9 @@
   <meson id="fontconfig"
          mesonargs="-Ddoc=disabled -Ddefault-fonts-dirs=/System/Library/Fonts -Dadditional-fonts-dirs=/Library/Fonts">
 
-    <branch module="fontconfig-2.15.0.tar.xz"
-            version="2.15.0"
-            hash="sha256:63a0658d0e06e0fa886106452b58ef04f21f58202ea02a94c39de0d3335d7c0e"
+    <branch module="fontconfig-2.16.0.tar.xz"
+            version="2.16.0"
+            hash="sha256:6a33dc555cc9ba8b10caf7695878ef134eeb36d0af366041f639b1da9b6ed220"
             repo="fontconfig" />
     <dependencies>
       <dep package="freetype" />
@@ -193,9 +193,9 @@
   -->
   <meson id="cairo"
          mesonargs="-Dfontconfig=enabled -Dfreetype=enabled">
-    <branch module="releases/cairo-1.18.0.tar.xz"
-            version="1.18.0"
-            hash="sha256:243a0736b978a33dee29f9cca7521733b78a65b5418206fef7bd1c3d4cf10b64"
+    <branch module="releases/cairo-1.18.2.tar.xz"
+            version="1.18.2"
+            hash="sha256:a62b9bb42425e844cc3d6ddde043ff39dbabedd1542eba57a2eb79f85889d45a"
             repo="cairographics" />
     <dependencies>
       <dep package="pixman" />
@@ -248,13 +248,9 @@
   <!---->
   <meson id="pango"
          mesonargs="-Dfontconfig=enabled">
-    <branch module="pango/1.52/pango-1.52.2.tar.xz"
-            version="1.52.2"
-            hash="sha256:d0076afe01082814b853deec99f9349ece5f2ce83908b8e58ff736b41f78a96b">
-
-      <patch file="pango-ct-font-fallback.patch"
-             strip="1" />
-    </branch>
+    <branch module="pango/1.56/pango-1.56.0.tar.xz"
+            version="1.56.0"
+            hash="sha256:1fb98b338ee6f7cf8ef96153b7d242f4568fe60f9b7434524eca630a57bd538b" />
     <dependencies>
       <dep package="glib" />
       <dep package="cairo" />
@@ -311,10 +307,9 @@
   -->
   <meson id="gtk+-3.0"
          mesonargs="-Dx11_backend=false">
-    <branch module="gtk+/3.24/gtk+-3.24.43.tar.xz"
-            version="3.24.43"
-            hash="sha256:7e04f0648515034b806b74ae5d774d87cffb1a2a96c468cb5be476d51bf2f3c7">
-    </branch>
+    <branch module="gtk/3.24/gtk-3.24.49.tar.xz"
+            version="3.24.49"
+            hash="sha256:5ea52c6a28f0e5ecf2e9a3c2facbb30d040b73871fcd5f33cd1317e9018a146e" />
     <dependencies>
       <dep package="glib" />
       <dep package="pango" />
@@ -348,15 +343,24 @@
     </dependencies>
   </autotools>
   <!---->
-  <autotools id="adwaita-icon-theme"
-             autogen-sh="configure">
-    <branch module="adwaita-icon-theme/44/adwaita-icon-theme-44.0.tar.xz"
-            version="44.0"
-            hash="sha256:4889c5601bbfecd25d80ba342209d0a936dcf691ee56bd6eca4cde361f1a664c" />
+  <meson id="adwaita-icon-theme">
+    <branch module="adwaita-icon-theme/47/adwaita-icon-theme-47.0.tar.xz"
+            version="47.0"
+            hash="sha256:ad088a22958cb8469e41d9f1bba0efb27e586a2102213cd89cc26db2e002bdfe" />
+    <dependencies>
+      <dep package="librsvg" />
+      <dep package="adwaita-icon-theme-legacy" />
+    </dependencies>
+  </meson>
+  <!---->
+  <meson id="adwaita-icon-theme-legacy">
+    <branch module="adwaita-icon-theme-legacy/46/adwaita-icon-theme-legacy-46.2.tar.xz"
+            version="46.2"
+            hash="sha256:548480f58589a54b72d18833b755b15ffbd567e3187249d74e2e1f8f99f22fb4" />
     <dependencies>
       <dep package="librsvg" />
     </dependencies>
-  </autotools>
+  </meson>
   <!--
     Null metamodule, provided so as not to break modules that use it.
   -->

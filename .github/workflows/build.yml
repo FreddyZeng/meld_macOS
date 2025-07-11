@@ -1,0 +1,102 @@
+# .github/workflows/build.yml
+#
+# This workflow was converted from a GitLab CI script.
+# It builds the application for both x86_64 and arm64 architectures on macOS.
+
+name: Build Meld
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    # The name of the job is dynamically set based on the matrix
+    name: Build for ${{ matrix.arch }}
+
+    # Use a matrix to run jobs for different architectures
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            os: macos-13 # A recent Intel-based macOS runner
+            sdkroot: /Applications/Xcode_14.3.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
+          - arch: arm64
+            os: macos-14 # The latest Apple Silicon (ARM64) runner
+            sdkroot: /Applications/Xcode_15.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk
+
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+
+    # Environment variables available to all steps
+    env:
+      MELD_BUILD: ${{ github.run_id }}
+      CCACHE_DIR: ${{ github.workspace }}/ccache
+      CCACHE_MAXSIZE: "500Mi"
+      SDKROOT: ${{ matrix.sdkroot }}
+
+    steps:
+      # 1. Check-out the repository and its submodules
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 1
+
+      # 2. Set up ccache for caching build objects
+      - name: Cache ccache directory
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ runner.os }}-${{ matrix.arch }}-ccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.arch }}-ccache-
+
+      # 3. Verify SDK (replaces the included GitLab template)
+      #    NOTE: The logic from the original .verify_sdk-template.yml must be
+      #    transferred here. This is a placeholder for that logic.
+      - name: Verify SDK
+        run: |
+          echo "Verifying SDK at $SDKROOT..."
+          if [ ! -d "$SDKROOT" ]; then
+            echo "SDK not found at $SDKROOT!"
+            exit 1
+          fi
+          echo "SDK verified."
+
+      # 4. Run the build scripts
+      - name: Build Toolset
+        run: ./build_toolset.sh
+
+      - name: Build Meld
+        run: ./build_meld.sh
+
+      # 5. Cleanup (equivalent to after_script)
+      #    This step runs even if the build fails.
+      - name: Cleanup build directories
+        if: always()
+        run: |
+          echo "Performing cleanup..."
+          # Assuming 'jhb' is a script or binary created during the build
+          if [ -f "jhb/usr/bin/config" ]; then
+            VER_DIR=$(jhb/usr/bin/config get VER_DIR)
+            if [ -n "${VER_DIR}" ]; then
+              echo "Removing ${VER_DIR}"
+              rm -rf "${VER_DIR}"
+            else
+              echo "VER_DIR not found."
+            fi
+          else
+            echo "jhb config not found, skipping cleanup."
+          fi
+
+      # 6. Upload the build artifact
+      - name: Upload DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meld-${{ matrix.arch }}
+          path: Meld*.dmg
+

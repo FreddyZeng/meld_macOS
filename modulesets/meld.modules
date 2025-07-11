@@ -25,32 +25,9 @@
             hash="sha256:a0817df39ce385b6621880407c56f1f298168c040c2032cedf88d5b76affe836"
             repo="freedesktop" />
     <dependencies>
-      <dep package="gettext" />
       <dep package="glib" />
     </dependencies>
   </meson>
-  <!--
-    GTK Mac Bundler https://gitlab.gnome.org/GNOME/gtk-mac-bundler
-
-    Patch mocks autotools interface to the extent that it provides a
-    "configure", but the "make install" is still broken and needs to
-    be skipped.
-  -->
-  <autotools id="gtkmacbundler"
-             autogen-sh="configure"
-             makeargs="&amp;&amp; make install"
-             skip-install="yes"
-             supports-non-srcdir-builds="no">
-    <branch module="gtk-mac-bundler/-/archive/6dd89ea6/gtk-mac-bundler-6dd89ea6.tar.bz2"
-            version="6dd89ea6"
-            hash="sha256:ef70eba556679cae60d954b52f31c9936d0ca17e27ee7f71380936e1c3545c6b"
-            checkoutdir="gtk-mac-bundler_6dd89ea6"
-            rename-tarball="gtk-mac-bundler_6dd89ea6.tar.bz2"
-            repo="gnome_gitlab">
-      <patch file="gtk-mac-bundler_autotools.patch"
-             strip="1" />
-    </branch>
-  </autotools>
   <!--
     ImageMagick https://imagemagick.org
   -->
@@ -68,9 +45,9 @@
   </autotools>
   <!---->
   <meson id="meld">
-    <branch module="meld/-/archive/3.22.2/meld-3.22.2.tar.bz2"
-            version="3.22.2"
-            hash="sha256:c535ef1146fe455e6be86a783c88736ff9f7f6345388d84f71612e1e2cde7b5b"
+    <branch module="meld/-/archive/3.22.3/meld-3.22.3.tar.bz2"
+            version="3.22.3"
+            hash="sha256:859b34226983155c4fe4da94ab8b121fc55a48f0c166c3bc6a8e7624e8849e3f"
             checkoutdir="meld"
             repo="gnome_gitlab">
       <patch file="meld-app.patch"

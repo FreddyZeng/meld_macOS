@@ -17,14 +17,12 @@
 
 ### variables ##################################################################
 
-MELD_APPDIR=$ART_DIR/Meld.app
-MELD_APPCON_DIR=$MELD_APPDIR/Contents
-MELD_APP_RES_DIR=$MELD_APPCON_DIR/Resources
-MELD_APP_BIN_DIR=$MELD_APP_RES_DIR/bin
-MELD_APPETC_DIR=$MELD_APP_RES_DIR/etc
+MELD_APP_DIR=$ART_DIR/Meld.app
+MELD_APP_CON_DIR=$MELD_APP_DIR/Contents
+MELD_APP_RES_DIR=$MELD_APP_CON_DIR/Resources
 MELD_APP_LIB_DIR=$MELD_APP_RES_DIR/lib
-MELD_APPFRA_DIR=$MELD_APPCON_DIR/Frameworks
-MELD_APP_PLIST=$MELD_APPCON_DIR/Info.plist
+MELD_APP_FRA_DIR=$MELD_APP_CON_DIR/Frameworks
+MELD_APP_PLIST=$MELD_APP_CON_DIR/Info.plist
 
 MELD_BUILD=${MELD_BUILD:-0}
 
@@ -34,7 +32,7 @@ MELD_PYTHON_VER_MAJOR=3
 MELD_PYTHON_VER_MINOR=10
 MELD_PYTHON_VER=$MELD_PYTHON_VER_MAJOR.$MELD_PYTHON_VER_MINOR
 MELD_PYTHON_URL="https://gitlab.com/api/v4/projects/26780227/packages/generic/\
-python_macos/v21/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
+python_macos/v21.1/python_${MELD_PYTHON_VER/./}_$(uname -m).tar.xz"
 
 #--------------------------------------- Python packages to be bundled with Meld
 
@@ -93,7 +91,7 @@ function meld_pipinstall
   done
 
   local path_original=$PATH
-  export PATH=$MELD_APPFRA_DIR/Python.framework/Versions/Current/bin:$PATH
+  export PATH=$MELD_APP_FRA_DIR/Python.framework/Versions/Current/bin:$PATH
 
   # shellcheck disable=SC2086 # we need word splitting here
   pip$MELD_PYTHON_VER_MAJOR install \
@@ -116,16 +114,18 @@ function meld_pipinstall_pygobject
 {
   # GObject Introspection
   lib_change_paths \
-    @loader_path/../../.. \
-    "$MELD_APP_LIB_DIR" \
+    @loader_path/../../../../../Frameworks \
+    "$MELD_APP_FRA_DIR" \
     "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/gi/_gi*.so
 
   # Cairo
   lib_change_paths \
-    @loader_path/../../.. \
-    "$MELD_APP_LIB_DIR" \
+    @loader_path/../../../../../Frameworks \
+    "$MELD_APP_FRA_DIR" \
     "$MELD_APP_LIB_DIR"/python$MELD_PYTHON_VER/site-packages/cairo/\
 _cairo.cpython-${MELD_PYTHON_VER/./}-darwin.so
+
+  rm -rf "${MELD_APP_RES_DIR:?}"/include
 }
 
 function meld_download_python
@@ -139,18 +139,13 @@ function meld_install_python
 {
   local target_dir=$1
 
-  target_dir=${target_dir:-$MELD_APPFRA_DIR}
+  target_dir=${target_dir:-$MELD_APP_FRA_DIR}
 
   mkdir -p "$target_dir"
   tar -C "$target_dir" -xf "$PKG_DIR"/"$(basename "${MELD_PYTHON_URL%\?*}")"
   local python_lib=Python.framework/Versions/$MELD_PYTHON_VER/Python
   install_name_tool -id @executable_path/../Frameworks/$python_lib \
     "$target_dir"/$python_lib
-
-  # create '.pth' file inside Framework to include our site-packages directory
-  echo "../../../../../../../Resources/lib/python$MELD_PYTHON_VER/site-packages"\
-    > "$target_dir"/Python.framework/Versions/Current/lib/\
-python$MELD_PYTHON_VER/site-packages/meld.pth
 }
 
 function meld_build_wheels
